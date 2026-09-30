@@ -10,7 +10,10 @@ pub use coordinator::{
     connected_browsers, get_browser_launcher_lock, resolve_cli_runner_extension_path,
 };
 pub use error::BrowserError;
-pub use extension::{Extension, ExtensionRegistry};
+pub use extension::{
+    fetch_available_extensions, install_remote_extension, Extension, ExtensionRegistry,
+    RemoteExtensionManifest,
+};
 pub use launcher::{BrowserLauncher, BrowserLauncherOptions};
 pub use manager::{
     browser_registry, browser_sessions, graceful_stop_browser, kill_browser_processes,
