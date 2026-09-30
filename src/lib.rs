@@ -11,8 +11,8 @@ pub use coordinator::{
 };
 pub use error::BrowserError;
 pub use extension::{
-    fetch_available_extensions, install_remote_extension, Extension, ExtensionRegistry,
-    RemoteExtensionManifest,
+    fetch_available_extensions, install_remote_extension, resolve_profile_extension_paths,
+    strip_windows_verbatim, Extension, ExtensionRegistry, RemoteExtensionManifest,
 };
 pub use launcher::{BrowserLauncher, BrowserLauncherOptions};
 pub use manager::{

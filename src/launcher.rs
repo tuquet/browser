@@ -39,6 +39,9 @@ impl BrowserLauncher {
             "--disable-setuid-sandbox".to_string(),
             "--log-level=3".to_string(),
             "--test-type".to_string(),
+            // Edge Case 7.1: Network guardrails (prevent hanging on extension auto-updates behind SOCKS5 proxy)
+            "--disable-component-update".to_string(),
+            "--disable-domain-reliability".to_string(),
         ];
 
         if is_headless {
@@ -48,13 +51,37 @@ impl BrowserLauncher {
             args.push("--window-size=1280,720".to_string());
         }
 
-        if !self.options.extension_paths.is_empty() {
-            let exts = self.options.extension_paths.join(",");
+        // Edge Case 2.1: Filter extension paths that exist on disk and strip verbatim prefixes
+        let valid_ext_paths: Vec<String> = self
+            .options
+            .extension_paths
+            .iter()
+            .map(|p| {
+                let mut s = p.clone();
+                if s.starts_with(r"\\?\") {
+                    s = s[4..].to_string();
+                }
+                s
+            })
+            .filter(|p| std::path::Path::new(p).exists())
+            .collect();
+
+        if !valid_ext_paths.is_empty() {
+            let exts = valid_ext_paths.join(",");
             args.push(format!("--load-extension={}", exts));
             args.push(format!("--disable-extensions-except={}", exts));
         }
 
-        args.extend(self.options.custom_args.clone());
+        // Custom args handling + Edge Case 3.1: Enforce --headless=new when extensions are loaded
+        for arg in &self.options.custom_args {
+            if !valid_ext_paths.is_empty() && (arg == "--headless" || arg == "--headless=true") {
+                if !args.contains(&"--headless=new".to_string()) {
+                    args.push("--headless=new".to_string());
+                }
+            } else if !args.contains(arg) {
+                args.push(arg.clone());
+            }
+        }
         if !args.iter().any(|a| a.starts_with("http://") || a.starts_with("https://")) {
             args.push("about:blank".to_string());
         }

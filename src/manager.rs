@@ -97,51 +97,66 @@ impl BrowserManager {
             }
             let original_ext_path = std::path::Path::new(&cleaned);
             if original_ext_path.exists() && original_ext_path.is_dir() {
-                // Copy the extension to a browser-specific unique temp directory
-                let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis();
-                let browser_ext_dir = get_temp_dir().join(format!("automa_ext_{}_{}", self.options.browser_id, timestamp));
-                self.created_ext_dirs.push(browser_ext_dir.to_string_lossy().to_string());
-                
-                // Copy directory recursively using pure Rust
-                copy_dir_all(original_ext_path.to_path_buf(), browser_ext_dir.clone()).await?;
+                let is_automa = cleaned.to_lowercase().contains("automa")
+                    || (original_ext_path.join("manifest.json").exists() && {
+                        std::fs::read_to_string(original_ext_path.join("manifest.json"))
+                            .map(|c| c.to_lowercase().contains("automa"))
+                            .unwrap_or(false)
+                    });
 
-                // Inject daemon.json
-                let daemon_config_path = browser_ext_dir.join("daemon.json");
-                let host = std::env::var("TUQUET_HOST")
-                    .or_else(|_| std::env::var("AUTOMA_HOST"))
-                    .unwrap_or_else(|_| "127.0.0.1".to_string());
-                let port = std::env::var("TUQUET_PORT")
-                    .or_else(|_| std::env::var("AUTOMA_PORT"))
-                    .ok()
-                    .and_then(|p| p.parse::<u16>().ok())
-                    .unwrap_or(8765);
-                let base_url = format!("http://{}:{}", host, port);
-                let config_content = format!(
-                    "{{\"browserId\": \"{}\", \"port\": {}, \"host\": \"{}\", \"baseUrl\": \"{}\"}}",
-                    self.options.browser_id, port, host, base_url
-                );
-                tokio::fs::write(daemon_config_path, config_content).await?;
+                if is_automa {
+                    // Copy the extension to a browser-specific unique temp directory
+                    let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis();
+                    let browser_ext_dir = get_temp_dir().join(format!("automa_ext_{}_{}", self.options.browser_id, timestamp));
+                    self.created_ext_dirs.push(browser_ext_dir.to_string_lossy().to_string());
+                    
+                    // Copy directory recursively using pure Rust
+                    copy_dir_all(original_ext_path.to_path_buf(), browser_ext_dir.clone()).await?;
 
-                // Ensure manifest.json exists and has valid version for Chromium
-                let manifest_path = browser_ext_dir.join("manifest.json");
-                if manifest_path.exists()
-                    && let Ok(content) = tokio::fs::read_to_string(&manifest_path).await
-                        && let Ok(mut manifest) = serde_json::from_str::<serde_json::Value>(&content) {
-                            let has_valid_version = manifest.get("version")
-                                .and_then(|v| v.as_str())
-                                .map(|s| !s.is_empty())
-                                .unwrap_or(false);
-                            if !has_valid_version {
-                                manifest["version"] = serde_json::Value::String("1.28.27".to_string());
-                                if let Ok(new_content) = serde_json::to_string_pretty(&manifest) {
-                                    let _ = tokio::fs::write(&manifest_path, new_content).await;
+                    // Inject daemon.json
+                    let daemon_config_path = browser_ext_dir.join("daemon.json");
+                    let host = std::env::var("TUQUET_HOST")
+                        .or_else(|_| std::env::var("AUTOMA_HOST"))
+                        .unwrap_or_else(|_| "127.0.0.1".to_string());
+                    let port = std::env::var("TUQUET_PORT")
+                        .or_else(|_| std::env::var("AUTOMA_PORT"))
+                        .ok()
+                        .and_then(|p| p.parse::<u16>().ok())
+                        .unwrap_or(8765);
+                    let base_url = format!("http://{}:{}", host, port);
+                    let config_content = format!(
+                        "{{\"browserId\": \"{}\", \"port\": {}, \"host\": \"{}\", \"baseUrl\": \"{}\"}}",
+                        self.options.browser_id, port, host, base_url
+                    );
+                    tokio::fs::write(daemon_config_path, config_content).await?;
+
+                    // Ensure manifest.json exists and has valid version for Chromium
+                    let manifest_path = browser_ext_dir.join("manifest.json");
+                    if manifest_path.exists()
+                        && let Ok(content) = tokio::fs::read_to_string(&manifest_path).await
+                            && let Ok(mut manifest) = serde_json::from_str::<serde_json::Value>(&content) {
+                                let has_valid_version = manifest.get("version")
+                                    .and_then(|v| v.as_str())
+                                    .map(|s| !s.is_empty())
+                                    .unwrap_or(false);
+                                if !has_valid_version {
+                                    manifest["version"] = serde_json::Value::String("1.28.27".to_string());
+                                    if let Ok(new_content) = serde_json::to_string_pretty(&manifest) {
+                                        let _ = tokio::fs::write(&manifest_path, new_content).await;
+                                    }
                                 }
                             }
-                        }
-                
-                final_ext_paths.push(browser_ext_dir.to_string_lossy().to_string());
+                    
+                    final_ext_paths.push(browser_ext_dir.to_string_lossy().to_string());
+                } else {
+                    // Non-automa extension (e.g. ublock, cookie-injector): load directly without copying
+                    final_ext_paths.push(cleaned);
+                }
             } else {
-                final_ext_paths.push(ext_path_str.clone());
+                tracing::warn!(
+                    "[BrowserManager] Extension path '{}' does not exist on disk. Omitted from launch flags.",
+                    cleaned
+                );
             }
         }
 
