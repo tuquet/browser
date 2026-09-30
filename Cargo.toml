@@ -1,0 +1,24 @@
+[package]
+name = "tuquet-browser"
+version = "0.1.0"
+edition = "2024"
+description = "Dedicated Browser Runtime, Multi-Profile Sandbox & Automation Subsystem for Tuquet"
+repository = "https://github.com/tuquet/browser"
+license = "MIT"
+
+[features]
+default = []
+utoipa = ["dep:utoipa"]
+
+[dependencies]
+tokio = { version = "1.53.1", features = ["full"] }
+reqwest = { version = "0.12", features = ["json", "stream"] }
+zip = "0.6.6"
+futures = "0.3.34"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+thiserror = "2.0"
+anyhow = "1.0"
+tracing = "0.1.44"
+sysinfo = "0.39.6"
+utoipa = { version = "5.5.0", optional = true }
