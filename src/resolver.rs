@@ -101,8 +101,8 @@ pub fn get_runtime_exe_path() -> PathBuf {
     get_runtime_dir().join(get_platform_exe_rel_path())
 }
 
-/// Constructs the official high-speed CDN download URL for Open-Source Chromium
-pub fn get_download_url(revision: &str) -> String {
+/// Constructs the list of official high-speed CDN download mirror URLs for Open-Source Chromium
+pub fn get_download_urls(revision: &str) -> Vec<String> {
     let platform_asset = match get_platform_key() {
         "win64" => "chromium-win64.zip",
         "linux64" => "chromium-linux.zip",
@@ -110,10 +110,23 @@ pub fn get_download_url(revision: &str) -> String {
         "mac-x64" => "chromium-mac.zip",
         _ => "chromium-win64.zip",
     };
-    format!(
-        "https://playwright.azureedge.net/builds/chromium/{}/{}",
-        revision, platform_asset
-    )
+    vec![
+        // Direct Microsoft Azure Blob CDN (avoids 307 redirect and edge instability)
+        format!(
+            "https://playwright.download.prss.microsoft.com/dbazure/download/playwright/builds/chromium/{}/{}",
+            revision, platform_asset
+        ),
+        // Azure Edge CDN
+        format!(
+            "https://playwright.azureedge.net/builds/chromium/{}/{}",
+            revision, platform_asset
+        ),
+    ]
+}
+
+/// Constructs the primary CDN download URL for Open-Source Chromium
+pub fn get_download_url(revision: &str) -> String {
+    get_download_urls(revision).into_iter().next().unwrap()
 }
 
 /// Returns the dedicated standalone Chromium runtime descriptor (Zero Host Scanning)
@@ -193,6 +206,8 @@ pub fn clean_runtime() -> Result<()> {
 
 /// Downloads and installs official Open-Source Chromium into <data_dir>/runtimes/chromium-<platform>/
 pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str>) -> Result<String> {
+    use tokio::io::AsyncWriteExt;
+
     let exe_path = get_runtime_exe_path();
     if !force && exe_path.exists() {
         let abs_path = if !exe_path.is_absolute() {
@@ -204,7 +219,7 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     }
 
     let revision = custom_revision.unwrap_or(PINNED_CHROMIUM_REVISION);
-    let download_url = get_download_url(revision);
+    let mirrors = get_download_urls(revision);
     let platform = get_platform_key();
 
     println!("============================================================");
@@ -213,84 +228,171 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     println!(" Engine:     Chromium (Pure Open Source - BSD 3-Clause)");
     println!(" Version:    v{} (Revision {})", PINNED_CHROMIUM_VERSION, revision);
     println!(" Platform:   {}", platform);
-    println!(" URL:        {}", download_url);
+    println!(" Primary:    {}", mirrors[0]);
     println!(" Target:     {}", exe_path.display());
     println!("------------------------------------------------------------");
 
-    // Configure proxy-aware HTTP client with redirect following
+    // Configure proxy-aware HTTP client
     let mut builder = reqwest::Client::builder()
         .redirect(reqwest::redirect::Policy::limited(10))
+        .connect_timeout(std::time::Duration::from_secs(30))
         .timeout(std::time::Duration::from_secs(600));
 
-    if let Ok(proxy_url) = env::var("ALL_PROXY")
-        .or_else(|_| env::var("HTTP_PROXY"))
+    let proxy_candidate = env::var("ALL_PROXY")
         .or_else(|_| env::var("all_proxy"))
+        .or_else(|_| env::var("HTTPS_PROXY"))
+        .or_else(|_| env::var("https_proxy"))
+        .or_else(|_| env::var("HTTP_PROXY"))
         .or_else(|_| env::var("http_proxy"))
-        && let Ok(proxy) = reqwest::Proxy::all(&proxy_url) {
+        .ok();
+
+    if let Some(proxy_str) = proxy_candidate {
+        if let Ok(proxy) = reqwest::Proxy::all(&proxy_str) {
             builder = builder.proxy(proxy);
         }
+    }
 
     let client = builder.build()?;
 
-    let response = client
-        .get(&download_url)
-        .send()
-        .await
-        .map_err(|e| anyhow!("Failed to initiate download from {}: {}", download_url, e))?;
-
-    if !response.status().is_success() {
-        return Err(anyhow!(
-            "Download failed with HTTP status code: {}",
-            response.status()
-        ));
-    }
-
-    let total_bytes = response.content_length().unwrap_or(0);
-    let mut stream = response.bytes_stream();
-
     let temp_zip_path = std::env::temp_dir().join(format!(
-        "chromium_oss_{}_{}_{}.zip",
-        platform,
-        revision,
-        std::process::id()
+        "chromium_oss_{}_{}.zip",
+        platform, revision
     ));
 
-    let mut file = tokio::fs::File::create(&temp_zip_path)
-        .await
-        .map_err(|e| anyhow!("Failed to create temporary archive {:?}: {}", temp_zip_path, e))?;
+    let mut downloaded_bytes: u64 = if temp_zip_path.exists() {
+        std::fs::metadata(&temp_zip_path).map(|m| m.len()).unwrap_or(0)
+    } else {
+        0
+    };
 
-    let mut downloaded_bytes: u64 = 0;
-    let mut last_reported = std::time::Instant::now();
+    let mut total_bytes: u64 = 0;
+    let mut mirror_idx = 0;
+    let mut attempts = 0;
+    let max_attempts = 10;
 
-    use tokio::io::AsyncWriteExt;
+    while attempts < max_attempts {
+        attempts += 1;
+        let url = &mirrors[mirror_idx % mirrors.len()];
 
-    while let Some(chunk_result) = stream.next().await {
-        let chunk = chunk_result.map_err(|e| anyhow!("Network error while streaming Chromium binary: {}", e))?;
-        file.write_all(&chunk)
-            .await
-            .map_err(|e| anyhow!("Failed to write chunk to disk: {}", e))?;
-        downloaded_bytes += chunk.len() as u64;
-
-        if last_reported.elapsed().as_millis() >= 350 || (total_bytes > 0 && downloaded_bytes == total_bytes) {
-            if total_bytes > 0 {
-                let percent = (downloaded_bytes as f64 / total_bytes as f64) * 100.0;
-                let mb_down = downloaded_bytes as f64 / 1_048_576.0;
-                let mb_tot = total_bytes as f64 / 1_048_576.0;
-                print!(
-                    "\r[ChromiumDownloader] {:>5.1}% ({:.1} MB / {:.1} MB)...",
-                    percent, mb_down, mb_tot
-                );
-                let _ = std::io::stdout().flush();
-            } else {
-                let mb_down = downloaded_bytes as f64 / 1_048_576.0;
-                print!("\r[ChromiumDownloader] Downloaded {:.1} MB...", mb_down);
-                let _ = std::io::stdout().flush();
-            }
-            last_reported = std::time::Instant::now();
+        let mut req = client.get(url);
+        if downloaded_bytes > 0 {
+            req = req.header("Range", format!("bytes={}-", downloaded_bytes));
         }
+
+        let response = match req.send().await {
+            Ok(res) => res,
+            Err(e) => {
+                eprintln!("\n[ChromiumDownloader] Mirror {} connection error: {}. Retrying with next mirror...", url, e);
+                mirror_idx += 1;
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+                continue;
+            }
+        };
+
+        let status = response.status();
+        if status == reqwest::StatusCode::PARTIAL_CONTENT {
+            // Resuming download
+            if total_bytes == 0 {
+                if let Some(cr) = response.headers().get("Content-Range").and_then(|h| h.to_str().ok()) {
+                    if let Some(slash_idx) = cr.rfind('/') {
+                        if let Ok(tot) = cr[slash_idx + 1..].trim().parse::<u64>() {
+                            total_bytes = tot;
+                        }
+                    }
+                }
+                if total_bytes == 0 {
+                    total_bytes = downloaded_bytes + response.content_length().unwrap_or(0);
+                }
+            }
+        } else if status.is_success() {
+            // Fresh download (server didn't accept Range or fresh start)
+            downloaded_bytes = 0;
+            total_bytes = response.content_length().unwrap_or(0);
+        } else if status == reqwest::StatusCode::RANGE_NOT_SATISFIABLE {
+            // Already fully downloaded!
+            break;
+        } else {
+            eprintln!("\n[ChromiumDownloader] Server returned HTTP {}. Switching mirror...", status);
+            mirror_idx += 1;
+            tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+            continue;
+        }
+
+        let mut file = match tokio::fs::OpenOptions::new()
+            .create(true)
+            .write(true)
+            .append(downloaded_bytes > 0)
+            .truncate(downloaded_bytes == 0)
+            .open(&temp_zip_path)
+            .await {
+                Ok(f) => f,
+                Err(e) => return Err(anyhow!("Failed to open temp archive {:?}: {}", temp_zip_path, e)),
+            };
+
+        let mut stream = response.bytes_stream();
+        let mut stream_failed = false;
+        let mut last_reported = std::time::Instant::now();
+
+        while let Some(chunk_res) = stream.next().await {
+            match chunk_res {
+                Ok(chunk) => {
+                    if let Err(e) = file.write_all(&chunk).await {
+                        eprintln!("\n[ChromiumDownloader] Error writing chunk to disk: {}", e);
+                        stream_failed = true;
+                        break;
+                    }
+                    downloaded_bytes += chunk.len() as u64;
+
+                    if last_reported.elapsed().as_millis() >= 300 || (total_bytes > 0 && downloaded_bytes >= total_bytes) {
+                        if total_bytes > 0 {
+                            let pct = (downloaded_bytes as f64 / total_bytes as f64) * 100.0;
+                            let mb_down = downloaded_bytes as f64 / 1_048_576.0;
+                            let mb_tot = total_bytes as f64 / 1_048_576.0;
+                            print!(
+                                "\r[ChromiumDownloader] {:>5.1}% ({:.1} MB / {:.1} MB)...",
+                                pct.min(100.0), mb_down, mb_tot
+                            );
+                        } else {
+                            let mb_down = downloaded_bytes as f64 / 1_048_576.0;
+                            print!("\r[ChromiumDownloader] Downloaded {:.1} MB...", mb_down);
+                        }
+                        let _ = std::io::stdout().flush();
+                        last_reported = std::time::Instant::now();
+                    }
+                }
+                Err(e) => {
+                    eprintln!(
+                        "\n[ChromiumDownloader] Stream interrupted at {:.1} MB ({}). Automatically resuming...",
+                        downloaded_bytes as f64 / 1_048_576.0,
+                        e
+                    );
+                    stream_failed = true;
+                    break;
+                }
+            }
+        }
+
+        let _ = file.flush().await;
+        drop(file);
+
+        if !stream_failed {
+            if total_bytes == 0 || downloaded_bytes >= total_bytes {
+                break; // Complete!
+            }
+        }
+
+        mirror_idx += 1;
+        tokio::time::sleep(std::time::Duration::from_millis(500)).await;
     }
-    file.flush().await?;
-    drop(file);
+
+    if total_bytes > 0 && downloaded_bytes < total_bytes {
+        return Err(anyhow!(
+            "Failed to complete Chromium download after {} attempts. Downloaded {:.1} MB of {:.1} MB.",
+            max_attempts,
+            downloaded_bytes as f64 / 1_048_576.0,
+            total_bytes as f64 / 1_048_576.0
+        ));
+    }
 
     println!(
         "\n[ChromiumDownloader] Download completed ({:.1} MB). Extracting archive...",

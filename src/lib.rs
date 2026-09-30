@@ -1,5 +1,6 @@
 pub mod coordinator;
 pub mod error;
+pub mod extension;
 pub mod launcher;
 pub mod manager;
 pub mod profile;
@@ -9,6 +10,7 @@ pub use coordinator::{
     connected_browsers, get_browser_launcher_lock, resolve_cli_runner_extension_path,
 };
 pub use error::BrowserError;
+pub use extension::{Extension, ExtensionRegistry};
 pub use launcher::{BrowserLauncher, BrowserLauncherOptions};
 pub use manager::{
     browser_registry, browser_sessions, graceful_stop_browser, kill_browser_processes,
