@@ -195,6 +195,9 @@ impl BrowserManager {
     pub async fn cleanup(&mut self) -> Result<()> {
         if let Some(mut launcher) = self.launcher.take() {
             if let Some(pid) = launcher.get_pid() {
+                #[cfg(not(target_os = "windows"))]
+                let _ = pid;
+
                 let mut registry = browser_registry().write().await;
                 registry.remove(&self.options.browser_id);
 
