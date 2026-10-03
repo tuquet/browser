@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./assets/logo.svg" width="76" height="76" alt="Browser Logo" />
+  <img src="https://tuquet.github.io/icons/browser.svg" width="76" height="76" alt="Browser Logo" />
   <h1>Browser</h1>
   <p><strong>High-Performance Headless Web Scraping &amp; Dedicated Chromium Automation Runtime</strong></p>
 
