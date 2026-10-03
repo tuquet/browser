@@ -42,6 +42,7 @@ impl BrowserLauncher {
             // Edge Case 7.1: Network guardrails (prevent hanging on extension auto-updates behind SOCKS5 proxy)
             "--disable-component-update".to_string(),
             "--disable-domain-reliability".to_string(),
+            "--disable-blink-features=AutomationControlled".to_string(),
         ];
 
         if is_headless {
