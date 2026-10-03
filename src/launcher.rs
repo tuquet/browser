@@ -48,6 +48,15 @@ impl BrowserLauncher {
         if is_headless {
             args.push("--disable-gpu".to_string());
             args.push("--disable-software-rasterizer".to_string());
+            let has_custom_ua = self.options.custom_args.iter().any(|a| a.starts_with("--user-agent"));
+            if !has_custom_ua {
+                #[cfg(target_os = "windows")]
+                args.push("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36".to_string());
+                #[cfg(target_os = "macos")]
+                args.push("--user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36".to_string());
+                #[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
+                args.push("--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36".to_string());
+            }
         } else {
             args.push("--window-size=1280,720".to_string());
         }
