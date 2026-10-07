@@ -1,0 +1,318 @@
+{
+  "schema_version": "1.0",
+  "name": "tuquet-browser-runtimes",
+  "description": "Curated Manifest of C++ Antidetect Chromium Runtimes for Tuquet",
+  "updated_at": "2026-10-06T08:50:01.315Z",
+  "default_channel": "lts",
+  "channels": {
+    "lts": "148.0.7778.215",
+    "latest": "150.0.7871.186"
+  },
+  "releases": [
+    {
+      "version": "150.0.7871.186",
+      "tag": "150.0.7871.186",
+      "channel": "latest",
+      "status": "buggy",
+      "notes": "Upstream regression: SIGSEGV / Crashpad_NotConnectedToHandler in getImageData() / readPixels() (Issues #94 & #95). Not recommended for production.",
+      "published_at": "2026-10-02T14:02:29Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip",
+          "size": 193743241
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium-150.0.7871.186-1-x86_64_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium-150.0.7871.186-1-x86_64_linux.tar.xz",
+          "size": 145806232
+        }
+      }
+    },
+    {
+      "version": "148.0.7778.215",
+      "tag": "148.0.7778.215",
+      "channel": "lts",
+      "status": "recommended",
+      "notes": "Golden LTS Release: Zero canvas readback crashes, realistic WebGL GPU parameter simulation, randomized 8/16/32 GB device memory.",
+      "published_at": "2026-06-21T04:34:00Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip",
+          "size": 189767686
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium-148.0.7778.215-1-x86_64_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64_linux.tar.xz",
+          "size": 141269020
+        },
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_148.0.7778.215-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_macos.dmg",
+          "size": 140187500
+        }
+      }
+    },
+    {
+      "version": "144.0.7559.132",
+      "tag": "144.0.7559.132",
+      "channel": "archive",
+      "status": "deprecated",
+      "notes": "Introduced realistic WebGL parameter simulation. Deprecated manual --fingerprint-gpu-vendor.",
+      "published_at": "2026-02-27T09:02:24Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_144.0.7559.132-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium_144.0.7559.132-1.1_windows_x64.zip",
+          "size": 176796270
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium-144.0.7559.132-1-x86_64_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium-144.0.7559.132-1-x86_64_linux.tar.xz",
+          "size": 133493680
+        }
+      }
+    },
+    {
+      "version": "142.0.7444.175",
+      "tag": "142.0.7444.175",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 142.0.7444.175. Under evaluation by Tuquet team.",
+      "published_at": "2025-12-23T03:45:43Z",
+      "platforms": {
+        "linux64": {
+          "asset_name": "ungoogled-chromium-142.0.7444.175-1-x86_64_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64_linux.tar.xz",
+          "size": 132048760
+        },
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_142.0.7444.175-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_macos.dmg",
+          "size": 130929159
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_142.0.7444.175-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_windows_x64.zip",
+          "size": 410369977
+        }
+      }
+    },
+    {
+      "version": "139.0.7258.154",
+      "tag": "139.0.7258.154",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 139.0.7258.154. Under evaluation by Tuquet team.",
+      "published_at": "2025-09-14T09:20:22Z",
+      "platforms": {
+        "linux64": {
+          "asset_name": "ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz",
+          "size": 131364556
+        },
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_139.0.7258.154-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg",
+          "size": 129973813
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip",
+          "size": 403763462
+        }
+      }
+    },
+    {
+      "version": "138.0.7204.183",
+      "tag": "138.0.7204.183",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 138.0.7204.183. Under evaluation by Tuquet team.",
+      "published_at": "2025-08-11T04:46:42Z",
+      "platforms": {
+        "linux64": {
+          "asset_name": "ungoogled-chromium-138.0.7204.183-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium-138.0.7204.183-1_linux.tar.xz",
+          "size": 32
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip",
+          "size": 400935413
+        }
+      }
+    },
+    {
+      "version": "136.0.7103.113",
+      "tag": "136.0.7103.113",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 136.0.7103.113. Under evaluation by Tuquet team.",
+      "published_at": "2025-06-01T04:47:55Z",
+      "platforms": {
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_136.0.7103.113-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_macos.dmg",
+          "size": 126173095
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip",
+          "size": 395128530
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_136.0.7103.113-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1_linux.tar.xz",
+          "size": 132023928
+        }
+      }
+    },
+    {
+      "version": "135.0.7049.95",
+      "tag": "135.0.7049.95",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 135.0.7049.95. Under evaluation by Tuquet team.",
+      "published_at": "2025-05-11T07:36:14Z",
+      "platforms": {
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_135.0.7049.95-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_macos.dmg",
+          "size": 125111910
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip",
+          "size": 391511588
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_135.0.7049.95-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1_linux.tar.xz",
+          "size": 130230216
+        }
+      }
+    },
+    {
+      "version": "134.0.6998.165",
+      "tag": "134.0.6998.165",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 134.0.6998.165. Under evaluation by Tuquet team.",
+      "published_at": "2025-04-29T09:56:13Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_134.0.6998.165-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_windows_x64.zip",
+          "size": 388984370
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_134.0.6998.165-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1_linux.tar.xz",
+          "size": 129858564
+        }
+      }
+    },
+    {
+      "version": "133.0.6943.126",
+      "tag": "133.0.6943.126",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 133.0.6943.126. Under evaluation by Tuquet team.",
+      "published_at": "2025-04-18T09:04:33Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_133.0.6943.126-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/133.0.6943.126/ungoogled-chromium_133.0.6943.126-1.1_windows_x64.zip",
+          "size": 388934271
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_133.0.6943.126-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/133.0.6943.126/ungoogled-chromium_133.0.6943.126-1_linux.tar.xz",
+          "size": 130276784
+        }
+      }
+    },
+    {
+      "version": "132.0.6834.159",
+      "tag": "132.0.6834.159",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 132.0.6834.159. Under evaluation by Tuquet team.",
+      "published_at": "2025-02-20T06:42:42Z",
+      "platforms": {
+        "mac-x64": {
+          "asset_name": "ungoogled-chromium_132.0.6834.110-1.1_macos.dmg",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.110-1.1_macos.dmg",
+          "size": 123261209
+        },
+        "win64": {
+          "asset_name": "ungoogled-chromium_132.0.6834.159-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1.1_windows_x64.zip",
+          "size": 384277805
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_132.0.6834.159-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1_linux.tar.xz",
+          "size": 128724600
+        }
+      }
+    },
+    {
+      "version": "131.0.6778.264",
+      "tag": "131.0.6778.264",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 131.0.6778.264. Under evaluation by Tuquet team.",
+      "published_at": "2025-01-17T04:12:20Z",
+      "platforms": {
+        "linux64": {
+          "asset_name": "ungoogled-chromium_131.0.6778.264-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/131.0.6778.264/ungoogled-chromium_131.0.6778.264-1_linux.tar.xz",
+          "size": 129011216
+        }
+      }
+    },
+    {
+      "version": "130.0.6723.116",
+      "tag": "130.0.6723.116",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 130.0.6723.116. Under evaluation by Tuquet team.",
+      "published_at": "2024-12-14T14:05:48Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_130.0.6723.116-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/130.0.6723.116/ungoogled-chromium_130.0.6723.116-1.1_windows_x64.zip",
+          "size": 381254088
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_130.0.6723.116-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/130.0.6723.116/ungoogled-chromium_130.0.6723.116-1_linux.tar.xz",
+          "size": 133066404
+        }
+      }
+    },
+    {
+      "version": "129.0.6668.100",
+      "tag": "129.0.6668.100",
+      "channel": "latest",
+      "status": "unverified",
+      "notes": "Newly discovered upstream release 129.0.6668.100. Under evaluation by Tuquet team.",
+      "published_at": "2024-12-09T12:13:12Z",
+      "platforms": {
+        "win64": {
+          "asset_name": "ungoogled-chromium_129.0.6668.100-1.1_windows_x64.zip",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/129.0.6668.100/ungoogled-chromium_129.0.6668.100-1.1_windows_x64.zip",
+          "size": 373557422
+        },
+        "linux64": {
+          "asset_name": "ungoogled-chromium_129.0.6668.100-1_linux.tar.xz",
+          "url": "https://github.com/adryfish/fingerprint-chromium/releases/download/129.0.6668.100/ungoogled-chromium_129.0.6668.100-1_linux.tar.xz",
+          "size": 129051104
+        }
+      }
+    }
+  ]
+}

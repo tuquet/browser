@@ -1,0 +1,47 @@
+name: CI (Test & Lint)
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - 'diagrams/**'
+      - 'CHEATSHEET.md'
+      - 'LICENSE'
+      - 'AGENTS.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '.vscode/**'
+      - 'diagrams/**'
+      - 'CHEATSHEET.md'
+      - 'LICENSE'
+      - 'AGENTS.md'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-windows:
+    uses: tuquet/tuquet/.github/workflows/reusable-rust-ci.yml@main
+    secrets: inherit
+    with:
+      os: windows-latest
+      target: x86_64-pc-windows-msvc
+      run-release-build: true
+
+  ci-linux:
+    uses: tuquet/tuquet/.github/workflows/reusable-rust-ci.yml@main
+    secrets: inherit
+    with:
+      os: ubuntu-latest
+      target: x86_64-unknown-linux-gnu
+      run-release-build: true

@@ -1,0 +1,43 @@
+name: Sync Upstream Releases
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-manifest:
+    name: Poll Upstream & Sync Manifest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Manifest Synchronization
+        id: sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/sync-manifest.mjs
+
+      - name: Commit and Push Manifest Changes
+        run: |
+          git config user.name "tuquet-bot[bot]"
+          git config user.email "bot@tuquet.dev"
+          if [[ -n $(git status --porcelain manifest.json) ]]; then
+            git add manifest.json
+            git commit -m "chore(releases): auto-sync upstream fingerprint-chromium releases"
+            git push origin main
+            echo "Manifest updated and pushed to main."
+          else
+            echo "No changes in manifest.json."
+          fi
