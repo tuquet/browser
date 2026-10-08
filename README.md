@@ -1,17 +1,19 @@
 <div align="center">
   <img src="https://tuquet.github.io/icons/browser.svg" width="80" height="80" alt="Browser Logo" />
-  <h1>Tuquet Browser Core (`tuquet-browser`)</h1>
+  <h1>Specter Browser Engine (`specter browser`)</h1>
   <p><strong>C++ Native Anti-Detect Engine, Deterministic PRNG Seed Hardware Emulation &amp; Multi-Profile Sandbox Subsystem in Rust</strong></p>
 
   <p>
-    <a href="https://github.com/tuquet/scoop-bucket"><img src="https://img.shields.io/badge/Scoop-tuquet-blue.svg" alt="Scoop Bucket" /></a>
+    <a href="https://github.com/tuquet/scoop-bucket"><img src="https://img.shields.io/badge/Scoop-specter-brightgreen.svg" alt="Scoop Bucket" /></a>
+    <a href="https://tuquet.github.io/docs/features/browser"><img src="https://img.shields.io/badge/Docs-VitePress%20Portal-blue.svg" alt="Documentation" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-2024%20%7C%20Tokio-orange.svg" alt="Rust 2024" /></a>
     <img src="https://img.shields.io/badge/Engine-C%2B%2B%20Antidetect%20v148%20LTS-brightgreen.svg" alt="C++ Antidetect v148 LTS" />
     <a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md"><img src="https://img.shields.io/badge/Skill-%2Fspecter--browser-purple.svg" alt="Specter Browser Skill" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
   </p>
   <p>
-    <strong><a href="https://tuquet.github.io/posts/xay-dung-trinh-duyet-an-danh-antidetect-standard">📖 Technical Guide &amp; Hands-on Lab Post &rarr;</a></strong> &bull;
+    <strong><a href="https://tuquet.github.io/docs/features/browser">📖 Read Full Documentation in Portal &rarr;</a></strong> &bull;
+    <strong><a href="https://tuquet.github.io/posts/xay-dung-trinh-duyet-an-danh-antidetect-standard">🔬 Deep-Dive Architectural Post &rarr;</a></strong> &bull;
     <strong><a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md">⚡ Operational Skill Reference (`/specter-browser`) &rarr;</a></strong>
   </p>
 </div>
@@ -27,11 +29,11 @@ In modern anti-bot environments protected by **Cloudflare Turnstile, DataDome, K
 2. **CDP Fingerprint Leaks**: Calling Chrome DevTools Protocol (`Runtime.enable`, `Page.enable`) exposes automation hooks to client-side scripts.
 3. **Hardware Fingerprint Non-Determinism**: Standard Chromium presents identical hardware hashes across different profiles on the same physical host, leading to immediate multi-accounting correlation bans.
 
-### Why Tuquet Standards on Native C++ Patched Chromium (`adryfish/fingerprint-chromium`)
+### Why Specter Standards on Native C++ Patched Chromium (`adryfish/fingerprint-chromium`)
 
-Tuquet Browser adopts the pre-compiled C++ Antidetect release ([`adryfish/fingerprint-chromium`](https://github.com/adryfish/fingerprint-chromium)) as its **canonical core engine** instead of generic vanilla Chromium:
+Specter Browser Engine adopts the pre-compiled C++ Antidetect release ([`adryfish/fingerprint-chromium`](https://github.com/adryfish/fingerprint-chromium)) as its **canonical core engine** instead of generic vanilla Chromium:
 
-| Architectural Metric | Vanilla Open-Source Chromium | JavaScript Stealth Plugins (Puppeteer) | Tuquet C++ Antidetect Engine (`v148 LTS`) |
+| Architectural Metric | Vanilla Open-Source Chromium | JavaScript Stealth Plugins (Puppeteer) | Specter C++ Antidetect Engine (`v148 LTS`) |
 | :--- | :--- | :--- | :--- |
 | **Interception Layer** | None (Raw Chromium) | High-level V8 JS Prototype tampering | **Deep Blink / V8 Native C++ core hooks** |
 | **Prototype Integrity** | Clean (but detectable flags) | Compromised (`toString` leaks, prototype trap) | **100% Native Invariance (`toString()` clean)** |
@@ -45,7 +47,7 @@ Tuquet Browser adopts the pre-compiled C++ Antidetect release ([`adryfish/finger
 
 ## 🏗️ Storage Hierarchy & Single Source of Truth (SSOT)
 
-In strict adherence to Tuquet's **Single Source of Truth (SSOT)**, all browser state, binaries, and runtime environments resolve exclusively to `~/.specter/browser/`:
+In strict adherence to Specter's **Single Source of Truth (SSOT)**, all browser state, binaries, and runtime environments resolve exclusively to `~/.specter/browser/`:
 
 ```text
 ~/.specter/browser/
@@ -188,7 +190,7 @@ Tuquet provides verified PowerShell runner scripts in `~/.specter/browser/script
 # 1. Launch Seed 133742 (Direct Network)
 powershell -ExecutionPolicy Bypass -File "$HOME\.specter\browser\scripts\launch_lab1.ps1"
 
-# 2. Launch Seed 888999 (SOCKS5 Proxy via Tuquet Bridge 127.0.0.1:1080)
+# 2. Launch Seed 888999 (SOCKS5 Proxy via Specter Bridge 127.0.0.1:1080)
 powershell -ExecutionPolicy Bypass -File "$HOME\.specter\browser\scripts\launch_lab2_proxy.ps1"
 
 # 3. Launch both side-by-side for comparison
@@ -199,7 +201,7 @@ powershell -ExecutionPolicy Bypass -File "$HOME\.specter\browser\scripts\compare
 
 ## ⚡ Operational Control & Engine Management
 
-Engine search, version switching, inspection, and lifecycle hygiene are managed directly via Tuquet CLI and **[Tuquet Skills](https://github.com/tuquet/skills)**:
+Engine search, version switching, inspection, and lifecycle hygiene are managed directly via Specter CLI and **[Specter Skills](https://github.com/tuquet/skills)**:
 
 ```powershell
 # 1. Search available upstream releases from curated manifest
@@ -231,10 +233,18 @@ specter browser clean
 To eliminate rate limits on `api.github.com` and ensure reproducible, enterprise-grade runtime downloads:
 - **Curated Manifest (`manifest.json`)**: Tracks upstream releases from [`adryfish/fingerprint-chromium`](https://github.com/adryfish/fingerprint-chromium) with platform assets, SHA256 checksums, and stability tags (`Golden LTS`, `Archive`, `Buggy`).
 - **CI Release Watcher (`.github/workflows/sync-releases.yml`)**: Automated cron runs every 6 hours using `scripts/sync-manifest.mjs` to fetch new upstream tags and submit pull requests/commits.
-- **Embedded Offline Fallback**: The `tuquet-browser` crate bundles `manifest.json` via `include_str!`, ensuring all search, listing, and validation logic runs 100% offline.
+- **Embedded Offline Fallback**: The `specter-browser` crate bundles `manifest.json` via `include_str!`, ensuring all search, listing, and validation logic runs 100% offline.
 
 > 💡 **AI Agent Quick Execution**: In Antigravity, Claude Code, or Cursor, invoke:  
 > **`/specter-browser [status|search|list|use|install|path|clean]`**
+
+---
+
+## 📖 Comprehensive Documentation
+
+For full architectural deep-dives, fingerprint evasion benchmarks, and automated profile lifecycle guides, visit the official **Specter Documentation Portal**:
+
+👉 **[https://tuquet.github.io/docs/features/browser](https://tuquet.github.io/docs/features/browser)**
 
 ---
 
