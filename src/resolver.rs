@@ -114,7 +114,7 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
     let installed = list_installed_runtimes();
     if installed.is_empty() {
         return Err(anyhow!(
-            "No antidetect browser runtimes installed. Run 'tuquet browser install' first."
+            "No antidetect browser runtimes installed. Run 'specter browser install' first."
         ));
     }
 
@@ -150,12 +150,12 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
     let manifest = crate::manifest::BrowserManifest::get_embedded();
     if let Some(rel) = manifest.find_release(query) {
         Err(anyhow!(
-            "Version '{}' ({}) is available in upstream manifest but not installed on this machine.\n  Run 'tuquet browser install {}' to install it.",
+            "Version '{}' ({}) is available in upstream manifest but not installed on this machine.\n  Run 'specter browser install {}' to install it.",
             query, rel.version, query
         ))
     } else {
         Err(anyhow!(
-            "Version '{}' was not found in manifest or local runtimes.\n  Run 'tuquet browser search' to see all available releases.",
+            "Version '{}' was not found in manifest or local runtimes.\n  Run 'specter browser search' to see all available releases.",
             query
         ))
     }
@@ -548,7 +548,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     let manifest = crate::manifest::fetch_manifest(false).await?;
     let release = manifest.find_release(target_query).ok_or_else(|| {
         anyhow!(
-            "Release '{}' not found in browser manifest. Run 'tuquet browser search' to see available releases.",
+            "Release '{}' not found in browser manifest. Run 'specter browser search' to see available releases.",
             target_query
         )
     })?;

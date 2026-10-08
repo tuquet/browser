@@ -7,12 +7,12 @@
     <a href="https://github.com/tuquet/scoop-bucket"><img src="https://img.shields.io/badge/Scoop-tuquet-blue.svg" alt="Scoop Bucket" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-2024%20%7C%20Tokio-orange.svg" alt="Rust 2024" /></a>
     <img src="https://img.shields.io/badge/Engine-C%2B%2B%20Antidetect%20v148%20LTS-brightgreen.svg" alt="C++ Antidetect v148 LTS" />
-    <a href="https://github.com/tuquet/skills/blob/main/skills/tuquet-browser/SKILL.md"><img src="https://img.shields.io/badge/Skill-%2Ftuquet--browser-purple.svg" alt="Tuquet Browser Skill" /></a>
+    <a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md"><img src="https://img.shields.io/badge/Skill-%2Fspecter--browser-purple.svg" alt="Specter Browser Skill" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
   </p>
   <p>
     <strong><a href="https://tuquet.github.io/posts/xay-dung-trinh-duyet-an-danh-antidetect-standard">📖 Technical Guide &amp; Hands-on Lab Post &rarr;</a></strong> &bull;
-    <strong><a href="https://github.com/tuquet/skills/blob/main/skills/tuquet-browser/SKILL.md">⚡ Operational Skill Reference (`/tuquet-browser`) &rarr;</a></strong>
+    <strong><a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md">⚡ Operational Skill Reference (`/specter-browser`) &rarr;</a></strong>
   </p>
 </div>
 
@@ -95,7 +95,7 @@ When launching the stealth engine via CLI or the `tuquet-browser` Rust crate, co
 | **`--timezone="<tz>"`** | `"Asia/Ho_Chi_Minh"`, `"UTC"` | Native C++ timezone override via `Intl.DateTimeFormat` **without modifying host OS clock**. |
 | **`--lang=<locale>`** | `vi-VN`, `en-US` | Sets internal browser UI language. |
 | **`--accept-lang=<locales>`** | `vi-VN,vi,en-US,en` | HTTP `Accept-Language` header and `navigator.languages` sequence. |
-| **`--proxy-server="<proto>://<ip>:<port>"`** | `socks5://127.0.0.1:1080` | Directs all HTTP/HTTPS/WebSocket traffic through SOCKS5 / HTTP proxy (pairs with `tuquet bridge`). |
+| **`--proxy-server="<proto>://<ip>:<port>"`** | `socks5://127.0.0.1:1080` | Directs all HTTP/HTTPS/WebSocket traffic through SOCKS5 / HTTP proxy (pairs with `specter bridge`). |
 | **`--disable-non-proxied-udp`** | *(Flag)* | **Essential WebRTC Guardrail**: Disables non-proxied UDP to prevent real IP leaks via STUN. |
 | **`--disable-spoofing=<list>`** | `font,audio` | Selectively disables spoofing for specified subsystems: `font`, `audio`, `canvas`, `clientrects`, `gpu`. |
 | **`--user-data-dir=<path>`** | `~/.specter/browser/profiles/p1` | Absolute path to isolated profile directory. |
@@ -203,27 +203,27 @@ Engine search, version switching, inspection, and lifecycle hygiene are managed 
 
 ```powershell
 # 1. Search available upstream releases from curated manifest
-tuquet browser search
+specter browser search
 
 # 2. List locally installed engines and active selection
-tuquet browser list
+specter browser list
 
 # 3. Switch active runtime engine (preserves 100% profile state)
-tuquet browser use stealth
-tuquet browser use chromium-win64
+specter browser use stealth
+specter browser use chromium-win64
 
 # 4. Install engine from curated manifest (defaults to Golden LTS v148)
-tuquet browser install
-tuquet browser install v148.0.7778.215 --engine stealth
+specter browser install
+specter browser install v148.0.7778.215 --engine stealth
 
 # 5. Inspect runtime readiness, active engine, and storage footprint
-tuquet browser status
+specter browser status
 
 # 6. Print raw executable path for headless automation drivers
-tuquet browser path
+specter browser path
 
 # 7. Purge dead GPUCache, ShaderCache, and SingletonLock files
-tuquet browser clean
+specter browser clean
 ```
 
 ### 🔄 Automated Release Watcher & Manifest (`manifest.json`)
@@ -234,7 +234,7 @@ To eliminate rate limits on `api.github.com` and ensure reproducible, enterprise
 - **Embedded Offline Fallback**: The `tuquet-browser` crate bundles `manifest.json` via `include_str!`, ensuring all search, listing, and validation logic runs 100% offline.
 
 > 💡 **AI Agent Quick Execution**: In Antigravity, Claude Code, or Cursor, invoke:  
-> **`/tuquet-browser [status|search|list|use|install|path|clean]`**
+> **`/specter-browser [status|search|list|use|install|path|clean]`**
 
 ---
 

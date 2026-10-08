@@ -351,7 +351,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
     let manifest = available
         .into_iter()
         .find(|m| m.id.eq_ignore_ascii_case(id))
-        .ok_or_else(|| anyhow!("Extension '{}' not found in tuquet-scoop-bucket catalog. Run 'tuquet browser ext catalog' to see available packages.", id))?;
+        .ok_or_else(|| anyhow!("Extension '{}' not found in tuquet-scoop-bucket catalog. Run 'specter browser ext catalog' to see available packages.", id))?;
 
     let ext_dir = ExtensionRegistry::resolve_extensions_dir().join(&manifest.id);
 
@@ -387,7 +387,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
     }
 
     println!("============================================================");
-    println!(" Tuquet Extension Provisioner (tuquet-scoop-bucket)");
+    println!(" Specter Extension Provisioner (tuquet-scoop-bucket)");
     println!("============================================================");
     println!(" Package:     {}", manifest.id);
     println!(" Name:        {}", manifest.name);
