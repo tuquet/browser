@@ -43,7 +43,7 @@ impl BrowserLauncher {
         {
             // In Linux containers or when executing as root (UID 0), Chromium requires --no-sandbox
             let is_root = unsafe { libc::getuid() == 0 };
-            if is_root || std::env::var("TUQUET_FORCE_NO_SANDBOX").map(|v| v == "1" || v == "true").unwrap_or(false) {
+            if is_root || std::env::var("SPECTER_FORCE_NO_SANDBOX").map(|v| v == "1" || v == "true").unwrap_or(false) {
                 args.push("--no-sandbox".to_string());
                 args.push("--disable-setuid-sandbox".to_string());
             }

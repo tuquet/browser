@@ -241,7 +241,7 @@ mod tests {
     #[test]
     fn test_profile_pack_unpack_cache_filtering() {
         let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
-        let temp_root = std::env::temp_dir().join(format!("tuquet_pack_test_{}", now));
+        let temp_root = std::env::temp_dir().join(format!("specter_pack_test_{}", now));
         let src_dir = temp_root.join("source_profile");
         let dst_dir = temp_root.join("restored_profile");
         let archive_path = temp_root.join("snapshot.tar.zst");

@@ -93,7 +93,7 @@ impl Extension {
     }
 }
 
-/// Persistent registry of browser extensions managed by Tuquet
+/// Persistent registry of browser extensions managed by Specter
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Default)]
 pub struct ExtensionRegistry {
@@ -133,7 +133,7 @@ impl ExtensionRegistry {
                 id: "automa".to_string(),
                 name: "Automa MV3 Runner Extension".to_string(),
                 version: "1.0.0".to_string(),
-                description: Some("Built-in Tuquet worker driver for Chrome DevTools Protocol automation".to_string()),
+                description: Some("Built-in Specter worker driver for Chrome DevTools Protocol automation".to_string()),
                 path: default_automa_path,
                 enabled: true,
                 is_builtin: true,
@@ -224,7 +224,7 @@ impl ExtensionRegistry {
     }
 }
 
-/// Remote extension package descriptor available in tuquet-scoop-bucket
+/// Remote extension package descriptor available in scoop catalog
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct RemoteExtensionManifest {
@@ -265,7 +265,7 @@ pub fn find_local_bucket_dir() -> Option<PathBuf> {
     None
 }
 
-/// Scans and lists all downloadable extensions from tuquet-scoop-bucket
+/// Scans and lists all downloadable extensions from the scoop catalog
 pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>> {
     let mut results = Vec::new();
 
@@ -298,7 +298,7 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
                                     homepage: raw.homepage,
                                     url: raw.url.unwrap_or_default(),
                                     hash: raw.hash,
-                                    source: "tuquet-scoop-bucket (local)".to_string(),
+                                    source: "scoop-catalog (local)".to_string(),
                                 });
                             }
                     }
@@ -335,7 +335,7 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
                             homepage: raw.homepage,
                             url: raw.url.unwrap_or_default(),
                             hash: raw.hash,
-                            source: "tuquet-scoop-bucket (github)".to_string(),
+                            source: "scoop-catalog (github)".to_string(),
                         });
                     }
         }
@@ -345,13 +345,13 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
     Ok(results)
 }
 
-/// Downloads, unpacks, and installs an extension from tuquet-scoop-bucket
+/// Downloads, unpacks, and installs an extension from the scoop catalog
 pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension> {
     let available = fetch_available_extensions().await?;
     let manifest = available
         .into_iter()
         .find(|m| m.id.eq_ignore_ascii_case(id))
-        .ok_or_else(|| anyhow!("Extension '{}' not found in tuquet-scoop-bucket catalog. Run 'specter browser ext catalog' to see available packages.", id))?;
+        .ok_or_else(|| anyhow!("Extension '{}' not found in scoop catalog. Run 'specter browser ext catalog' to see available packages.", id))?;
 
     let ext_dir = ExtensionRegistry::resolve_extensions_dir().join(&manifest.id);
 
@@ -387,7 +387,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
     }
 
     println!("============================================================");
-    println!(" Specter Extension Provisioner (tuquet-scoop-bucket)");
+    println!(" Specter Extension Provisioner (Scoop Catalog)");
     println!("============================================================");
     println!(" Package:     {}", manifest.id);
     println!(" Name:        {}", manifest.name);
@@ -473,7 +473,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
 /// Handles all profile extension edge cases:
 /// - Edge Case 1.1: Mandatory 'automa' injection when running in automation/workflow mode.
 /// - Edge Case 1.2: Extension priority ordering (Automa first, then other extensions).
-/// - Edge Case 2.1: JIT auto-provisioning from tuquet-scoop-bucket if missing on disk, with graceful omission on failure.
+/// - Edge Case 2.1: JIT auto-provisioning from scoop catalog if missing on disk, with graceful omission on failure.
 /// - Edge Case 2.2: Windows path verification (strips verbatim \\?\ prefix, guards against comma delimiter collisions).
 pub async fn resolve_profile_extension_paths(
     requested_ids: &[String],
@@ -509,7 +509,7 @@ pub async fn resolve_profile_extension_paths(
                 path_opt = Some(ext.path.clone());
             }
 
-        // Edge Case 2.1: Missing on disk -> Attempt JIT provisioning from tuquet-scoop-bucket
+        // Edge Case 2.1: Missing on disk -> Attempt JIT provisioning from scoop catalog
         if path_opt.is_none() {
             tracing::info!(
                 "[ProfileExtension] Extension '{}' is not present on disk. Attempting JIT provisioning from scoop-bucket...",

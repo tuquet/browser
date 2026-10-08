@@ -285,7 +285,7 @@ impl BrowserProfile {
 
     /// Restores a profile from a .tar.zst archive into the SSOT sandbox directory
     pub fn unpack_archive(archive_path: &Path, base_dir: &Path, expected_hash: Option<&str>) -> anyhow::Result<Self> {
-        let temp_dir = std::env::temp_dir().join(format!("tuquet_unpack_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos()));
+        let temp_dir = std::env::temp_dir().join(format!("specter_unpack_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos()));
         let report = crate::packer::ProfilePacker::unpack(archive_path, &temp_dir, expected_hash)?;
 
         let meta_file = temp_dir.join("profile.json");
@@ -384,7 +384,7 @@ mod tests {
 
     #[test]
     fn test_profile_generate_and_persistence_lifecycle() {
-        let temp_dir = std::env::temp_dir().join(format!("tuquet_prof_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        let temp_dir = std::env::temp_dir().join(format!("specter_prof_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
         let _ = std::fs::create_dir_all(&temp_dir);
 
         // 1. Generate deterministic profile

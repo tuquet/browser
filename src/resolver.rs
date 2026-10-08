@@ -15,7 +15,7 @@ pub const PINNED_STEALTH_CHROMIUM_VERSION: &str = "148.0.7778.215";
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
-/// Dedicated browser runtime descriptor for Tuquet (Zero Host Scanning)
+/// Dedicated browser runtime descriptor for Specter (Zero Host Scanning)
 pub struct DetectedHostBrowser {
     /// Browser engine type (always chromium in phase 1)
     pub browser_type: String,
@@ -585,7 +585,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     }
 
     println!("============================================================");
-    println!(" Tuquet Browser - C++ Antidetect Engine Provisioning");
+    println!(" Specter Browser - C++ Antidetect Engine Provisioning");
     println!("============================================================");
     println!(" Version:    v{} (Channel: {}, Status: {})", release.version, release.channel, release.status);
     println!(" Platform:   {}", platform_key);
@@ -781,7 +781,7 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     let platform = get_platform_key();
 
     println!("============================================================");
-    println!(" Tuquet Browser - Open-Source Chromium Provisioning");
+    println!(" Specter Browser - Open-Source Chromium Provisioning");
     println!("============================================================");
     println!(" Engine:     Chromium (Pure Open Source - BSD 3-Clause)");
     println!(" Version:    v{} (Revision {})", PINNED_CHROMIUM_VERSION, revision);

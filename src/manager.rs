@@ -122,10 +122,10 @@ impl BrowserManager {
 
                     // Inject daemon.json
                     let daemon_config_path = browser_ext_dir.join("daemon.json");
-                    let host = std::env::var("TUQUET_HOST")
+                    let host = std::env::var("SPECTER_HOST")
                         .or_else(|_| std::env::var("AUTOMA_HOST"))
                         .unwrap_or_else(|_| "127.0.0.1".to_string());
-                    let port = std::env::var("TUQUET_PORT")
+                    let port = std::env::var("SPECTER_PORT")
                         .or_else(|_| std::env::var("AUTOMA_PORT"))
                         .ok()
                         .and_then(|p| p.parse::<u16>().ok())
