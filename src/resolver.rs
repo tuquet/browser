@@ -5,12 +5,10 @@ use std::env;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-/// Pinned stable Long-Term-Support (LTS) release of official Open-Source Chromium
-pub const PINNED_CHROMIUM_REVISION: &str = "1148";
-pub const PINNED_CHROMIUM_VERSION: &str = "131.0.6778.33";
-
-/// Pinned stable Long-Term-Support (LTS) release of C++ Antidetect Chromium
-pub const PINNED_STEALTH_CHROMIUM_VERSION: &str = "148.0.7778.215";
+pub use crate::constants::{
+    DEFAULT_SSOT_DIR_NAME, PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION,
+    PINNED_STEALTH_CHROMIUM_VERSION,
+};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
@@ -48,11 +46,9 @@ pub struct InstalledRuntimeInfo {
     pub size_mb: Option<f64>,
 }
 
-pub const DEFAULT_SSOT_DIR_NAME: &str = ".specter";
-
 /// Resolves the canonical SSOT root directory (~/.specter/ or $SPECTER_HOME)
 pub fn canonical_ssot_dir() -> PathBuf {
-    if let Ok(dir) = env::var("SPECTER_HOME") {
+    if let Ok(dir) = env::var(crate::constants::ENV_SPECTER_HOME) {
         if !dir.trim().is_empty() {
             return PathBuf::from(dir);
         }
