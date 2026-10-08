@@ -5,14 +5,14 @@
 
   <p>
     <a href="https://github.com/tuquet/scoop-bucket"><img src="https://img.shields.io/badge/Scoop-specter-brightgreen.svg" alt="Scoop Bucket" /></a>
-    <a href="https://tuquet.github.io/docs/features/browser"><img src="https://img.shields.io/badge/Docs-VitePress%20Portal-blue.svg" alt="Documentation" /></a>
+    <a href="https://tuquet.github.io/docs/browser/"><img src="https://img.shields.io/badge/Docs-VitePress%20Portal-blue.svg" alt="Documentation" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-2024%20%7C%20Tokio-orange.svg" alt="Rust 2024" /></a>
     <img src="https://img.shields.io/badge/Engine-C%2B%2B%20Antidetect%20v148%20LTS-brightgreen.svg" alt="C++ Antidetect v148 LTS" />
     <a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md"><img src="https://img.shields.io/badge/Skill-%2Fspecter--browser-purple.svg" alt="Specter Browser Skill" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
   </p>
   <p>
-    <strong><a href="https://tuquet.github.io/docs/features/browser">📖 Read Full Documentation in Portal &rarr;</a></strong> &bull;
+    <strong><a href="https://tuquet.github.io/docs/browser/">📖 Read Full Documentation in Portal &rarr;</a></strong> &bull;
     <strong><a href="https://tuquet.github.io/posts/xay-dung-trinh-duyet-an-danh-antidetect-standard">🔬 Deep-Dive Architectural Post &rarr;</a></strong> &bull;
     <strong><a href="https://github.com/tuquet/skills/blob/main/skills/specter-browser/SKILL.md">⚡ Operational Skill Reference (`/specter-browser`) &rarr;</a></strong>
   </p>
@@ -244,7 +244,7 @@ To eliminate rate limits on `api.github.com` and ensure reproducible, enterprise
 
 For full architectural deep-dives, fingerprint evasion benchmarks, and automated profile lifecycle guides, visit the official **Specter Documentation Portal**:
 
-👉 **[https://tuquet.github.io/docs/features/browser](https://tuquet.github.io/docs/features/browser)**
+👉 **[https://tuquet.github.io/docs/browser/](https://tuquet.github.io/docs/browser/)**
 
 ---
 
