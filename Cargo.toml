@@ -33,4 +33,6 @@ ignore = "0.4.33"
 tar = "0.4.46"
 zstd = "0.14.0"
 lzma-rs = "0.3.0"
-libc = "0.2.190"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

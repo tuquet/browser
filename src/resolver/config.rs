@@ -9,10 +9,9 @@ use super::types::{
 
 /// Resolves the canonical SSOT root directory (~/.specter/ or $SPECTER_HOME)
 pub fn canonical_ssot_dir() -> PathBuf {
-    if let Ok(dir) = env::var(crate::constants::ENV_SPECTER_HOME) {
-        if !dir.trim().is_empty() {
-            return PathBuf::from(dir);
-        }
+    if let Ok(dir) = env::var(crate::constants::ENV_SPECTER_HOME)
+        && !dir.trim().is_empty() {
+        return PathBuf::from(dir);
     }
     let home = env::var("USERPROFILE")
         .or_else(|_| env::var("HOME"))

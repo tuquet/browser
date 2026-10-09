@@ -71,6 +71,40 @@ pub struct UnpackReport {
     pub sha256_hash: String,
 }
 
+struct HashingWriter<W: Write> {
+    inner: W,
+    hasher: Sha256,
+    bytes_written: u64,
+}
+
+impl<W: Write> HashingWriter<W> {
+    fn new(inner: W) -> Self {
+        Self {
+            inner,
+            hasher: Sha256::new(),
+            bytes_written: 0,
+        }
+    }
+
+    fn finalize(self) -> (W, String, u64) {
+        let hash = hex::encode(self.hasher.finalize());
+        (self.inner, hash, self.bytes_written)
+    }
+}
+
+impl<W: Write> Write for HashingWriter<W> {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        let n = self.inner.write(buf)?;
+        self.hasher.update(&buf[..n]);
+        self.bytes_written += n as u64;
+        Ok(n)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.inner.flush()
+    }
+}
+
 pub struct ProfilePacker;
 
 impl ProfilePacker {
@@ -114,7 +148,8 @@ impl ProfilePacker {
         let level = compression_level.unwrap_or(3);
 
         let out_file = File::create(output_archive)?;
-        let zstd_encoder = Encoder::new(out_file, level)?;
+        let hashing_writer = HashingWriter::new(out_file);
+        let zstd_encoder = Encoder::new(hashing_writer, level)?;
         let mut tar_builder = Builder::new(zstd_encoder);
 
         let mut file_count = 0usize;
@@ -125,7 +160,7 @@ impl ProfilePacker {
             dir: &Path,
             root: &Path,
             matcher: &ignore::gitignore::Gitignore,
-            tar: &mut Builder<Encoder<'static, File>>,
+            tar: &mut Builder<Encoder<'static, HashingWriter<File>>>,
             count: &mut usize,
             total_bytes: &mut u64,
         ) -> Result<()> {
@@ -157,25 +192,11 @@ impl ProfilePacker {
         walk_and_archive(profile_dir, profile_dir, &matcher, &mut tar_builder, &mut file_count, &mut uncompressed_bytes)?;
 
         let zstd_encoder = tar_builder.into_inner()?;
-        let mut out_file = zstd_encoder.finish()?;
-        out_file.flush()?;
+        let mut hashing_writer = zstd_encoder.finish()?;
+        hashing_writer.flush()?;
 
-        // Compute SHA256 and size of the generated archive
-        let mut archive_file = File::open(output_archive)?;
-        let mut hasher = Sha256::new();
-        let mut buffer = [0u8; 65536];
-        let mut compressed_bytes = 0u64;
-
-        loop {
-            let n = archive_file.read(&mut buffer)?;
-            if n == 0 {
-                break;
-            }
-            compressed_bytes += n as u64;
-            hasher.update(&buffer[..n]);
-        }
-
-        let sha256_hash = hex::encode(hasher.finalize());
+        // Retrieve SHA256 and compressed size computed in-flight without re-reading archive from disk
+        let (_, sha256_hash, compressed_bytes) = hashing_writer.finalize();
         let compression_ratio = if uncompressed_bytes > 0 {
             (1.0 - (compressed_bytes as f64 / uncompressed_bytes as f64)) * 100.0
         } else {
