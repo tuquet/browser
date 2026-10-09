@@ -1,17 +1,17 @@
 <div align="center">
-  <img src="https://tuquet.github.io/icons/browser.svg" width="76" height="76" alt="Browser Logo" />
+  <img src="https://tuquet.com/icons/browser.svg" width="76" height="76" alt="Browser Logo" />
   <h1>Specter Browser (`specter browser`)</h1>
   <p><strong>C++ Native Anti-Detect Engine & Deterministic PRNG Hardware Emulation</strong></p>
 
   <p>
-    <a href="https://tuquet.github.io/docs/browser/"><img src="https://img.shields.io/badge/Docs-VitePress%20Hub-blue.svg" alt="Documentation Hub" /></a>
+    <a href="https://specter.tuquet.com/browser/"><img src="https://img.shields.io/badge/Docs-VitePress%20Hub-blue.svg" alt="Documentation Hub" /></a>
     <a href="https://github.com/tuquet/scoop-bucket"><img src="https://img.shields.io/badge/Scoop-specter-brightgreen.svg" alt="Scoop" /></a>
     <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/Rust-Tokio-orange.svg" alt="Rust" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License" /></a>
   </p>
 
   <p>
-    <strong><a href="https://tuquet.github.io/docs/browser/">📖 Đọc toàn bộ tài liệu kỹ thuật tại Documentation Hub &rarr;</a></strong>
+    <strong><a href="https://specter.tuquet.com/browser/">📖 Đọc toàn bộ tài liệu kỹ thuật tại Documentation Hub &rarr;</a></strong>
   </p>
 </div>
 
@@ -38,4 +38,4 @@ specter browser status
 
 Toàn bộ đặc tả cờ CLI v148, ma trận phần cứng, cấu trúc thư mục và runbook kiểm nghiệm được bảo trì duy nhất tại Documentation Hub:
 
-👉 **[https://tuquet.github.io/docs/browser/](https://tuquet.github.io/docs/browser/)**
+👉 **[https://specter.tuquet.com/browser/](https://specter.tuquet.com/browser/)**

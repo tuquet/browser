@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
-  "name": "tuquet-browser-runtimes",
-  "description": "Curated Manifest of C++ Antidetect Chromium Runtimes for Tuquet",
+  "name": "specter-browser-runtimes",
+  "description": "Curated Manifest of C++ Antidetect Chromium Runtimes for Specter",
   "updated_at": "2026-10-06T08:50:01.315Z",
   "default_channel": "lts",
   "channels": {

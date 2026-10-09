@@ -15,6 +15,8 @@ pub const DEFAULT_PROFILE_IGNORE: &[&str] = &[
     "Code Cache/",
     "GPUCache/",
     "DawnCache/",
+    "DawnGraphiteCache/",
+    "DawnWebGPUCache/",
     "GrShaderCache/",
     "ShaderCache/",
     "component_crx_cache/",
@@ -25,6 +27,20 @@ pub const DEFAULT_PROFILE_IGNORE: &[&str] = &[
     "segmentation_platform/",
     "Safe Browsing/",
     "Certificate Revocation Lists/",
+
+    // Service Worker & offline caches (can balloon to hundreds of MBs)
+    "Service Worker/CacheStorage/",
+    "Service Worker/ScriptCache/",
+    "CacheStorage/",
+    "ScriptCache/",
+    "blob_storage/",
+    "File System/",
+    "shared_dictionary/",
+
+    // Diagnostic logs & telemetry
+    "WebRTC Logs/",
+    "webrtc_event_logs/",
+    "data_reduction_proxy_leveldb/",
 
     // Transient lock files & debug logs (preserves LevelDB/IndexedDB state)
     "Singleton*",
