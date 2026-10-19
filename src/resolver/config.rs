@@ -7,9 +7,10 @@ use super::types::{
     PINNED_STEALTH_CHROMIUM_VERSION,
 };
 
-/// Resolves the canonical SSOT root directory (~/.specter/ or $SPECTER_HOME)
+/// Resolves the canonical SSOT root directory (~/.tuquet/ or $TUQUET_HOME)
 pub fn canonical_ssot_dir() -> PathBuf {
-    if let Ok(dir) = env::var(crate::constants::ENV_SPECTER_HOME)
+    if let Ok(dir) = env::var(crate::constants::ENV_TUQUET_HOME)
+        .or_else(|_| env::var(crate::constants::ENV_SPECTER_HOME))
         && !dir.trim().is_empty() {
         return PathBuf::from(dir);
     }
