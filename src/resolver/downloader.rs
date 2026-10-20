@@ -87,7 +87,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     }
 
     println!("============================================================");
-    println!(" Tuquet Browser - C++ Antidetect Engine Provisioning");
+    println!(" Browser - C++ Antidetect Engine Provisioning");
     println!("============================================================");
     println!(" Version:    v{} (Channel: {}, Status: {})", release.version, release.channel, release.status);
     println!(" Platform:   {}", platform_key);
@@ -283,7 +283,7 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     let platform = get_platform_key();
 
     println!("============================================================");
-    println!(" Tuquet Browser - Open-Source Chromium Provisioning");
+    println!(" Browser - Open-Source Chromium Provisioning");
     println!("============================================================");
     println!(" Engine:     Chromium (Pure Open Source - BSD 3-Clause)");
     println!(" Version:    v{} (Revision {})", PINNED_CHROMIUM_VERSION, revision);

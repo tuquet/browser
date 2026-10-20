@@ -31,7 +31,7 @@ jobs:
 
       - name: Commit and Push Manifest Changes
         run: |
-          git config user.name "tuquet-bot[bot]"
+          git config user.name "bot[bot]"
           git config user.email "bot@tuquet.dev"
           if [[ -n $(git status --porcelain manifest.json) ]]; then
             git add manifest.json

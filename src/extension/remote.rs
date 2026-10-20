@@ -35,7 +35,7 @@ pub fn find_local_bucket_dir() -> Option<PathBuf> {
         let candidates = [
             home_path.join("scoop").join("buckets").join("tuquet").join("bucket"),
             home_path.join("Repository").join("tuquet").join("scoop-bucket").join("bucket"),
-            home_path.join("Repository").join("tuquet-scoop-bucket").join("bucket"),
+            home_path.join("Repository").join("scoop-bucket").join("bucket"),
         ];
         for c in candidates {
             if c.exists() {
@@ -168,7 +168,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
     }
 
     println!("============================================================");
-    println!(" Tuquet Extension Provisioner (Scoop Catalog)");
+    println!(" Extension Provisioner (Scoop Catalog)");
     println!("============================================================");
     println!(" Package:     {}", manifest.id);
     println!(" Name:        {}", manifest.name);

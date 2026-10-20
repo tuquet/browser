@@ -1,14 +1,14 @@
 [package]
-name = "tuquet-browser"
+name = "browser"
 version = "0.1.0"
 edition = "2024"
-description = "Dedicated Browser Runtime, Multi-Profile Sandbox & Automation Subsystem for Tuquet"
+description = "Dedicated Browser Runtime, Multi-Profile Sandbox & Automation Subsystem"
 repository = "https://github.com/tuquet/browser"
 readme = "README.md"
 license = "MIT"
 
 [lib]
-name = "tuquet_browser"
+name = "browser"
 path = "src/lib.rs"
 
 [features]

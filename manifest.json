@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "name": "tuquet-browser-runtimes",
+  "name": "browser-runtimes",
   "description": "Curated Manifest of C++ Antidetect Chromium Runtimes for Tuquet",
   "updated_at": "2026-10-06T08:50:01.315Z",
   "default_channel": "lts",
@@ -79,7 +79,7 @@
       "tag": "142.0.7444.175",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 142.0.7444.175. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 142.0.7444.175. Under evaluation by team.",
       "published_at": "2025-12-23T03:45:43Z",
       "platforms": {
         "linux64": {
@@ -104,7 +104,7 @@
       "tag": "139.0.7258.154",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 139.0.7258.154. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 139.0.7258.154. Under evaluation by team.",
       "published_at": "2025-09-14T09:20:22Z",
       "platforms": {
         "linux64": {
@@ -129,7 +129,7 @@
       "tag": "138.0.7204.183",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 138.0.7204.183. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 138.0.7204.183. Under evaluation by team.",
       "published_at": "2025-08-11T04:46:42Z",
       "platforms": {
         "linux64": {
@@ -149,7 +149,7 @@
       "tag": "136.0.7103.113",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 136.0.7103.113. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 136.0.7103.113. Under evaluation by team.",
       "published_at": "2025-06-01T04:47:55Z",
       "platforms": {
         "mac-x64": {
@@ -174,7 +174,7 @@
       "tag": "135.0.7049.95",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 135.0.7049.95. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 135.0.7049.95. Under evaluation by team.",
       "published_at": "2025-05-11T07:36:14Z",
       "platforms": {
         "mac-x64": {
@@ -199,7 +199,7 @@
       "tag": "134.0.6998.165",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 134.0.6998.165. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 134.0.6998.165. Under evaluation by team.",
       "published_at": "2025-04-29T09:56:13Z",
       "platforms": {
         "win64": {
@@ -219,7 +219,7 @@
       "tag": "133.0.6943.126",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 133.0.6943.126. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 133.0.6943.126. Under evaluation by team.",
       "published_at": "2025-04-18T09:04:33Z",
       "platforms": {
         "win64": {
@@ -239,7 +239,7 @@
       "tag": "132.0.6834.159",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 132.0.6834.159. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 132.0.6834.159. Under evaluation by team.",
       "published_at": "2025-02-20T06:42:42Z",
       "platforms": {
         "mac-x64": {
@@ -264,7 +264,7 @@
       "tag": "131.0.6778.264",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 131.0.6778.264. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 131.0.6778.264. Under evaluation by team.",
       "published_at": "2025-01-17T04:12:20Z",
       "platforms": {
         "linux64": {
@@ -279,7 +279,7 @@
       "tag": "130.0.6723.116",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 130.0.6723.116. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 130.0.6723.116. Under evaluation by team.",
       "published_at": "2024-12-14T14:05:48Z",
       "platforms": {
         "win64": {
@@ -299,7 +299,7 @@
       "tag": "129.0.6668.100",
       "channel": "latest",
       "status": "unverified",
-      "notes": "Newly discovered upstream release 129.0.6668.100. Under evaluation by Tuquet team.",
+      "notes": "Newly discovered upstream release 129.0.6668.100. Under evaluation by team.",
       "published_at": "2024-12-09T12:13:12Z",
       "platforms": {
         "win64": {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Tuquet Browser - Upstream Release Watcher & Manifest Sync
+ * Browser - Upstream Release Watcher & Manifest Sync
  *
  * Polls https://github.com/adryfish/fingerprint-chromium/releases
  * and synchronizes release metadata into manifest.json.
@@ -128,7 +128,7 @@ async function main() {
         tag: tag,
         channel: 'latest',
         status: 'unverified',
-        notes: `Newly discovered upstream release ${tag}. Under evaluation by Tuquet team.`,
+        notes: `Newly discovered upstream release ${tag}. Under evaluation by team.`,
         published_at: up.published_at,
         platforms,
       });

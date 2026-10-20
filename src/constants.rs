@@ -1,4 +1,4 @@
-//! Enterprise Constants for Tuquet Dedicated Browser & Sandboxing Subsystem
+//! Enterprise Constants for Dedicated Browser & Sandboxing Subsystem
 
 /// Default Chrome DevTools Protocol (CDP) port for automation debugging
 pub const DEFAULT_CDP_PORT: u16 = 9222;
@@ -19,8 +19,10 @@ pub const DIR_EXTENSIONS: &str = "extensions";
 pub const DIR_STEALTH: &str = "stealth";
 
 /// Environment variable overrides
-pub const ENV_FORCE_NO_SANDBOX: &str = "SPECTER_FORCE_NO_SANDBOX";
-pub const ENV_EXTENSION_PATH: &str = "SPECTER_EXTENSION_PATH";
+pub const ENV_FORCE_NO_SANDBOX: &str = "TUQUET_FORCE_NO_SANDBOX";
+pub const ENV_FORCE_NO_SANDBOX_LEGACY: &str = "SPECTER_FORCE_NO_SANDBOX";
+pub const ENV_EXTENSION_PATH: &str = "TUQUET_EXTENSION_PATH";
+pub const ENV_EXTENSION_PATH_LEGACY: &str = "SPECTER_EXTENSION_PATH";
 pub const ENV_TUQUET_HOME: &str = "TUQUET_HOME";
 pub const ENV_SPECTER_HOME: &str = "SPECTER_HOME";
 pub const ENV_SPECTER_HOST: &str = "SPECTER_HOST";
