@@ -19,9 +19,11 @@ pub const DIR_EXTENSIONS: &str = "extensions";
 pub const DIR_STEALTH: &str = "stealth";
 
 /// Environment variable overrides
-pub const ENV_FORCE_NO_SANDBOX: &str = "TUQUET_FORCE_NO_SANDBOX";
+pub const ENV_FORCE_NO_SANDBOX: &str = "TQ_FORCE_NO_SANDBOX";
+pub const ENV_FORCE_NO_SANDBOX_TUQUET: &str = "TUQUET_FORCE_NO_SANDBOX";
 pub const ENV_FORCE_NO_SANDBOX_LEGACY: &str = "SPECTER_FORCE_NO_SANDBOX";
-pub const ENV_EXTENSION_PATH: &str = "TUQUET_EXTENSION_PATH";
+pub const ENV_EXTENSION_PATH: &str = "TQ_EXTENSION_PATH";
+pub const ENV_EXTENSION_PATH_TUQUET: &str = "TUQUET_EXTENSION_PATH";
 pub const ENV_EXTENSION_PATH_LEGACY: &str = "SPECTER_EXTENSION_PATH";
 pub const ENV_TQ_HOME: &str = "TQ_HOME";
 pub const ENV_SPECTER_HOME: &str = "SPECTER_HOME";

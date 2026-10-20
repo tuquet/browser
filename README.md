@@ -20,7 +20,7 @@
 
 **Browser** là subsystem điều khiển và cô lập trình duyệt anti-detect ở tầng native C++ và Rust. Thay vì sử dụng các plugin JavaScript dễ bị phát hiện bởi Cloudflare Turnstile, DataDome hoặc CreepJS, engine nhúng trực tiếp nhân C++ Chromium LTS v148 với cơ chế sinh hạt giống phần cứng giả lập tất định (Deterministic PRNG Seed).
 
-* **Lưu trữ SSOT**: Toàn bộ profile, nhị phân runtime và extension được quản lý tập trung tại `~/.tuquet/browser/`.
+* **Lưu trữ SSOT**: Toàn bộ profile, nhị phân runtime và extension được quản lý tập trung tại `~/.tq/browser/`.
 * **Zero-Leak WebRTC & Canvas**: Khử hoàn toàn rò rỉ IP và vết định danh phần cứng qua GPU WebGL, AudioContext và Canvas 2D.
 
 ## ⚡ Sử Dụng Nhanh (Quickstart)
