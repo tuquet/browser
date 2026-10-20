@@ -23,8 +23,8 @@ pub const ENV_FORCE_NO_SANDBOX: &str = "TUQUET_FORCE_NO_SANDBOX";
 pub const ENV_FORCE_NO_SANDBOX_LEGACY: &str = "SPECTER_FORCE_NO_SANDBOX";
 pub const ENV_EXTENSION_PATH: &str = "TUQUET_EXTENSION_PATH";
 pub const ENV_EXTENSION_PATH_LEGACY: &str = "SPECTER_EXTENSION_PATH";
-pub const ENV_HOME: &str = "HOME";
-pub const HOME: &str = "SPECTER_HOME";
+pub const ENV_TQ_HOME: &str = "TQ_HOME";
+pub const ENV_SPECTER_HOME: &str = "SPECTER_HOME";
 pub const ENV_SPECTER_HOST: &str = "SPECTER_HOST";
 pub const ENV_SPECTER_PORT: &str = "SPECTER_PORT";
 
