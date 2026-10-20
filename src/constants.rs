@@ -4,7 +4,7 @@
 pub const DEFAULT_CDP_PORT: u16 = 9222;
 
 /// Canonical SSOT directory name under user home
-pub const DEFAULT_SSOT_DIR_NAME: &str = ".tuquet";
+pub const DEFAULT_SSOT_DIR_NAME: &str = ".tq";
 
 /// Pillar subdirectory name
 pub const PILLAR_DIR_BROWSER: &str = "browser";
@@ -12,7 +12,7 @@ pub const PILLAR_DIR_BROWSER: &str = "browser";
 /// Configuration filename
 pub const CONFIG_FILE_BROWSER_JSON: &str = "browser.json";
 
-/// Subdirectories under ~/.tuquet/browser/
+/// Subdirectories under ~/.tq/browser/
 pub const DIR_RUNTIMES: &str = "runtimes";
 pub const DIR_PROFILES: &str = "profiles";
 pub const DIR_EXTENSIONS: &str = "extensions";
@@ -23,8 +23,8 @@ pub const ENV_FORCE_NO_SANDBOX: &str = "TUQUET_FORCE_NO_SANDBOX";
 pub const ENV_FORCE_NO_SANDBOX_LEGACY: &str = "SPECTER_FORCE_NO_SANDBOX";
 pub const ENV_EXTENSION_PATH: &str = "TUQUET_EXTENSION_PATH";
 pub const ENV_EXTENSION_PATH_LEGACY: &str = "SPECTER_EXTENSION_PATH";
-pub const ENV_TUQUET_HOME: &str = "TUQUET_HOME";
-pub const ENV_SPECTER_HOME: &str = "SPECTER_HOME";
+pub const ENV_HOME: &str = "HOME";
+pub const HOME: &str = "SPECTER_HOME";
 pub const ENV_SPECTER_HOST: &str = "SPECTER_HOST";
 pub const ENV_SPECTER_PORT: &str = "SPECTER_PORT";
 

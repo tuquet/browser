@@ -7,10 +7,10 @@ use super::types::{
     PINNED_STEALTH_CHROMIUM_VERSION,
 };
 
-/// Resolves the canonical SSOT root directory (~/.tuquet/ or $TUQUET_HOME)
+/// Resolves the canonical SSOT root directory (~/.tq/ or $HOME)
 pub fn canonical_ssot_dir() -> PathBuf {
-    if let Ok(dir) = env::var(crate::constants::ENV_TUQUET_HOME)
-        .or_else(|_| env::var(crate::constants::ENV_SPECTER_HOME))
+    if let Ok(dir) = env::var(crate::constants::ENV_HOME)
+        .or_else(|_| env::var(crate::constants::HOME))
         && !dir.trim().is_empty() {
         return PathBuf::from(dir);
     }
@@ -65,7 +65,7 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
     let installed = super::detector::list_installed_runtimes();
     if installed.is_empty() {
         return Err(anyhow!(
-            "No antidetect browser runtimes installed. Run 'tuquet browser install' first."
+            "No antidetect browser runtimes installed. Run 'tq browser install' first."
         ));
     }
 
@@ -101,12 +101,12 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
     let manifest = crate::manifest::BrowserManifest::get_embedded();
     if let Some(rel) = manifest.find_release(query) {
         Err(anyhow!(
-            "Version '{}' ({}) is available in upstream manifest but not installed on this machine.\n  Run 'tuquet browser install {}' to install it.",
+            "Version '{}' ({}) is available in upstream manifest but not installed on this machine.\n  Run 'tq browser install {}' to install it.",
             query, rel.version, query
         ))
     } else {
         Err(anyhow!(
-            "Version '{}' was not found in manifest or local runtimes.\n  Run 'tuquet browser search' to see all available releases.",
+            "Version '{}' was not found in manifest or local runtimes.\n  Run 'tq browser search' to see all available releases.",
             query
         ))
     }

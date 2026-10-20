@@ -50,7 +50,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     let manifest = crate::manifest::fetch_manifest(false).await?;
     let release = manifest.find_release(target_query).ok_or_else(|| {
         anyhow!(
-            "Release '{}' not found in browser manifest. Run 'tuquet browser search' to see available releases.",
+            "Release '{}' not found in browser manifest. Run 'tq browser search' to see available releases.",
             target_query
         )
     })?;

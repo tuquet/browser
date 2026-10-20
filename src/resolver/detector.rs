@@ -82,7 +82,7 @@ pub fn detect_version_from_dir(dir: &Path) -> Option<String> {
     None
 }
 
-/// Scans and lists all locally installed Antidetect Chromium versions in ~/.tuquet/browser/runtimes/
+/// Scans and lists all locally installed Antidetect Chromium versions in ~/.tq/browser/runtimes/
 pub fn list_installed_runtimes() -> Vec<InstalledRuntimeInfo> {
     let runtimes_root = canonical_ssot_dir().join("browser").join("runtimes");
     let active_ver = get_active_version();

@@ -13,12 +13,12 @@ pub struct ExtensionRegistry {
 }
 
 impl ExtensionRegistry {
-    /// Resolves canonical extensions directory: ~/.tuquet/browser/extensions/
+    /// Resolves canonical extensions directory: ~/.tq/browser/extensions/
     pub fn resolve_extensions_dir() -> PathBuf {
         crate::resolver::canonical_ssot_dir().join("browser").join("extensions")
     }
 
-    /// Registry JSON storage path: ~/.tuquet/browser/extensions/registry.json
+    /// Registry JSON storage path: ~/.tq/browser/extensions/registry.json
     pub fn registry_file_path() -> PathBuf {
         Self::resolve_extensions_dir().join("registry.json")
     }
@@ -63,7 +63,7 @@ impl ExtensionRegistry {
         registry
     }
 
-    /// Persists registry to ~/.tuquet/browser/extensions/registry.json
+    /// Persists registry to ~/.tq/browser/extensions/registry.json
     pub fn save(&self) -> Result<()> {
         let dir = Self::resolve_extensions_dir();
         if !dir.exists() {
