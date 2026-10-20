@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use super::models::Extension;
 
-/// Persistent registry of browser extensions managed by Specter
+/// Persistent registry of browser extensions managed by Tuquet
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[derive(Default)]
 pub struct ExtensionRegistry {
@@ -13,12 +13,12 @@ pub struct ExtensionRegistry {
 }
 
 impl ExtensionRegistry {
-    /// Resolves canonical extensions directory: ~/.specter/browser/extensions/
+    /// Resolves canonical extensions directory: ~/.tuquet/browser/extensions/
     pub fn resolve_extensions_dir() -> PathBuf {
         crate::resolver::canonical_ssot_dir().join("browser").join("extensions")
     }
 
-    /// Registry JSON storage path: ~/.specter/browser/extensions/registry.json
+    /// Registry JSON storage path: ~/.tuquet/browser/extensions/registry.json
     pub fn registry_file_path() -> PathBuf {
         Self::resolve_extensions_dir().join("registry.json")
     }
@@ -44,7 +44,7 @@ impl ExtensionRegistry {
                 id: "automa".to_string(),
                 name: "Automa MV3 Runner Extension".to_string(),
                 version: "1.0.0".to_string(),
-                description: Some("Built-in Specter worker driver for Chrome DevTools Protocol automation".to_string()),
+                description: Some("Built-in Tuquet worker driver for Chrome DevTools Protocol automation".to_string()),
                 path: default_automa_path,
                 enabled: true,
                 is_builtin: true,
@@ -63,7 +63,7 @@ impl ExtensionRegistry {
         registry
     }
 
-    /// Persists registry to ~/.specter/browser/extensions/registry.json
+    /// Persists registry to ~/.tuquet/browser/extensions/registry.json
     pub fn save(&self) -> Result<()> {
         let dir = Self::resolve_extensions_dir();
         if !dir.exists() {

@@ -8,7 +8,7 @@ pub use crate::constants::{
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 #[serde(rename_all = "camelCase")]
-/// Dedicated browser runtime descriptor for Specter (Zero Host Scanning)
+/// Dedicated browser runtime descriptor for Tuquet (Zero Host Scanning)
 pub struct DetectedHostBrowser {
     /// Browser engine type (always chromium in phase 1)
     pub browser_type: String,

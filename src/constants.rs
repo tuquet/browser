@@ -1,4 +1,4 @@
-//! Enterprise Constants for Specter Dedicated Browser & Sandboxing Subsystem
+//! Enterprise Constants for Tuquet Dedicated Browser & Sandboxing Subsystem
 
 /// Default Chrome DevTools Protocol (CDP) port for automation debugging
 pub const DEFAULT_CDP_PORT: u16 = 9222;

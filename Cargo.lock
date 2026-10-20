@@ -1433,30 +1433,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "specter-browser"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "command-group",
- "futures",
- "hex",
- "ignore",
- "libc",
- "lzma-rs",
- "reqwest",
- "serde",
- "serde_json",
- "sha2",
- "sysinfo",
- "tar",
- "tokio",
- "tracing",
- "utoipa",
- "zip",
- "zstd 0.14.0",
-]
-
-[[package]]
 name = "stable_deref_trait"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1723,6 +1699,30 @@ name = "try-lock"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
+
+[[package]]
+name = "tuquet-browser"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "command-group",
+ "futures",
+ "hex",
+ "ignore",
+ "libc",
+ "lzma-rs",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sysinfo",
+ "tar",
+ "tokio",
+ "tracing",
+ "utoipa",
+ "zip",
+ "zstd 0.14.0",
+]
 
 [[package]]
 name = "typenum"

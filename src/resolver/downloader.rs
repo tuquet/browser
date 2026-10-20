@@ -50,7 +50,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     let manifest = crate::manifest::fetch_manifest(false).await?;
     let release = manifest.find_release(target_query).ok_or_else(|| {
         anyhow!(
-            "Release '{}' not found in browser manifest. Run 'specter browser search' to see available releases.",
+            "Release '{}' not found in browser manifest. Run 'tuquet browser search' to see available releases.",
             target_query
         )
     })?;
@@ -87,7 +87,7 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     }
 
     println!("============================================================");
-    println!(" Specter Browser - C++ Antidetect Engine Provisioning");
+    println!(" Tuquet Browser - C++ Antidetect Engine Provisioning");
     println!("============================================================");
     println!(" Version:    v{} (Channel: {}, Status: {})", release.version, release.channel, release.status);
     println!(" Platform:   {}", platform_key);
@@ -283,7 +283,7 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     let platform = get_platform_key();
 
     println!("============================================================");
-    println!(" Specter Browser - Open-Source Chromium Provisioning");
+    println!(" Tuquet Browser - Open-Source Chromium Provisioning");
     println!("============================================================");
     println!(" Engine:     Chromium (Pure Open Source - BSD 3-Clause)");
     println!(" Version:    v{} (Revision {})", PINNED_CHROMIUM_VERSION, revision);

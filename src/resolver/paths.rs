@@ -42,12 +42,12 @@ pub fn get_platform_exe_rel_path() -> PathBuf {
     }
 }
 
-/// Resolves the browser data directory root (~/.specter/browser).
+/// Resolves the browser data directory root (~/.tuquet/browser).
 pub fn resolve_data_dir() -> PathBuf {
     canonical_ssot_dir().join("browser")
 }
 
-/// Dedicated antidetect runtime directory path: ~/.specter/browser/runtimes/<version>
+/// Dedicated antidetect runtime directory path: ~/.tuquet/browser/runtimes/<version>
 pub fn get_runtime_dir() -> PathBuf {
     let runtimes_root = canonical_ssot_dir().join("browser").join("runtimes");
     let active_ver = get_active_version();

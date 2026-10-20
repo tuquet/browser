@@ -1,14 +1,14 @@
 [package]
-name = "specter-browser"
+name = "tuquet-browser"
 version = "0.1.0"
 edition = "2024"
-description = "Dedicated Browser Runtime, Multi-Profile Sandbox & Automation Subsystem for Specter"
+description = "Dedicated Browser Runtime, Multi-Profile Sandbox & Automation Subsystem for Tuquet"
 repository = "https://github.com/tuquet/browser"
 readme = "README.md"
 license = "MIT"
 
 [lib]
-name = "specter_browser"
+name = "tuquet_browser"
 path = "src/lib.rs"
 
 [features]
