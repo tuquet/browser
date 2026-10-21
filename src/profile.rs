@@ -52,22 +52,10 @@ pub struct BrowserProfile {
     pub screen_width: Option<u32>,
     #[serde(default)]
     pub screen_height: Option<u32>,
-    #[serde(default)]
-    pub screen_color_depth: Option<u32>,
+
     #[serde(default)]
     pub device_pixel_ratio: Option<f32>,
 
-    // --- GPU & Anti-Detect Noise Modes ---
-    #[serde(default)]
-    pub webgl_vendor: Option<String>,
-    #[serde(default)]
-    pub webgl_renderer: Option<String>,
-    #[serde(default)]
-    pub canvas_mode: Option<String>,
-    #[serde(default)]
-    pub audio_mode: Option<String>,
-    #[serde(default)]
-    pub webgl_mode: Option<String>,
 
     // --- Client Hints & Sensors ---
     #[serde(default)]
@@ -76,18 +64,7 @@ pub struct BrowserProfile {
     pub sec_ch_ua_platform: Option<String>,
     #[serde(default)]
     pub sec_ch_ua_mobile: Option<bool>,
-    #[serde(default)]
-    pub max_touch_points: Option<u32>,
 
-    // --- Geolocation Mocking ---
-    #[serde(default)]
-    pub geolocation_mode: Option<String>,
-    #[serde(default)]
-    pub latitude: Option<f64>,
-    #[serde(default)]
-    pub longitude: Option<f64>,
-    #[serde(default)]
-    pub accuracy_meters: Option<u32>,
 
     // --- Grouping & Custom Startup Flags ---
     #[serde(default)]
@@ -158,21 +135,10 @@ impl BrowserProfile {
             created_at: None,
             screen_width: Some(1920),
             screen_height: Some(1080),
-            screen_color_depth: Some(24),
             device_pixel_ratio: Some(1.0),
-            webgl_vendor: Some("Google Inc. (NVIDIA)".to_string()),
-            webgl_renderer: Some("ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)".to_string()),
-            canvas_mode: Some("noise".to_string()),
-            audio_mode: Some("noise".to_string()),
-            webgl_mode: Some("noise".to_string()),
             sec_ch_ua: Some("\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\"".to_string()),
             sec_ch_ua_platform: Some("\"Windows\"".to_string()),
             sec_ch_ua_mobile: Some(false),
-            max_touch_points: Some(0),
-            geolocation_mode: Some("prompt".to_string()),
-            latitude: None,
-            longitude: None,
-            accuracy_meters: Some(100),
             group_name: Some("default".to_string()),
             tags: Some(Vec::new()),
             startup_flags: Some(Vec::new()),
@@ -261,21 +227,10 @@ impl BrowserProfile {
             created_at: Some(now_str),
             screen_width: Some(if os_platform == "macos" { 2560 } else { 1920 }),
             screen_height: Some(if os_platform == "macos" { 1440 } else { 1080 }),
-            screen_color_depth: Some(24),
             device_pixel_ratio: Some(if os_platform == "macos" { 2.0 } else { 1.0 }),
-            webgl_vendor: Some(if os_platform == "macos" { "Apple Inc.".to_string() } else { "Google Inc. (NVIDIA)".to_string() }),
-            webgl_renderer: Some(if os_platform == "macos" { "Apple M2 Pro".to_string() } else { "ANGLE (NVIDIA, NVIDIA GeForce RTX 3070 Direct3D11 vs_5_0 ps_5_0, D3D11)".to_string() }),
-            canvas_mode: Some("noise".to_string()),
-            audio_mode: Some("noise".to_string()),
-            webgl_mode: Some("noise".to_string()),
             sec_ch_ua: Some("\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\"".to_string()),
             sec_ch_ua_platform: Some(if os_platform == "macos" { "\"macOS\"".to_string() } else { "\"Windows\"".to_string() }),
             sec_ch_ua_mobile: Some(false),
-            max_touch_points: Some(0),
-            geolocation_mode: Some("prompt".to_string()),
-            latitude: None,
-            longitude: None,
-            accuracy_meters: Some(100),
             group_name: Some("default".to_string()),
             tags: Some(Vec::new()),
             startup_flags: Some(Vec::new()),
@@ -464,6 +419,23 @@ impl BrowserProfile {
             }
         }
 
+        // 8. Screen Geometry & HiDPI Scaling
+        if let (Some(w), Some(h)) = (self.screen_width, self.screen_height) {
+            args.push(format!("--window-size={},{}", w, h));
+        }
+        if let Some(dpr) = self.device_pixel_ratio {
+            args.push(format!("--force-device-scale-factor={:.2}", dpr));
+        }
+
+        // 9. Extra Startup Flags
+        if let Some(ref extra_flags) = self.startup_flags {
+            for flag in extra_flags {
+                if !args.contains(flag) {
+                    args.push(flag.clone());
+                }
+            }
+        }
+
         args
     }
 }
@@ -516,6 +488,8 @@ mod tests {
         assert!(args.iter().any(|a| a.starts_with("--fingerprint=133742")));
         assert!(args.iter().any(|a| a.starts_with("--proxy-server=socks5://127.0.0.1:1080")));
         assert!(args.iter().any(|a| a == "--disable-non-proxied-udp"));
+        assert!(args.iter().any(|a| a == "--window-size=1920,1080"));
+        assert!(args.iter().any(|a| a == "--force-device-scale-factor=1.00"));
 
         // 6. Delete profile
         let deleted = BrowserProfile::delete(&profile.id, &temp_dir).expect("Delete failed");
