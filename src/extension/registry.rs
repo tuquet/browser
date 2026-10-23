@@ -38,10 +38,10 @@ impl ExtensionRegistry {
 
         // Bootstrap default Automa extension if missing or needs update
         let default_automa_path = PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
-        if !registry.extensions.contains_key("automa") {
+        if !registry.extensions.contains_key("automation") {
             let exists = default_automa_path.exists();
             let automa_ext = Extension {
-                id: "automa".to_string(),
+                id: "automation".to_string(),
                 name: "Automa MV3 Runner Extension".to_string(),
                 version: "1.0.0".to_string(),
                 description: Some("Built-in worker driver for Chrome DevTools Protocol automation".to_string()),
@@ -50,11 +50,11 @@ impl ExtensionRegistry {
                 is_builtin: true,
                 manifest_version: 3,
             };
-            registry.extensions.insert("automa".to_string(), automa_ext);
+            registry.extensions.insert("automation".to_string(), automa_ext);
             if exists {
                 let _ = registry.save();
             }
-        } else if let Some(ext) = registry.extensions.get_mut("automa")
+        } else if let Some(ext) = registry.extensions.get_mut("automation")
             && !ext.path.exists() && default_automa_path.exists() {
                 ext.path = default_automa_path;
                 let _ = registry.save();
@@ -95,8 +95,8 @@ impl ExtensionRegistry {
 
     /// Unregisters an extension by ID
     pub fn unregister(&mut self, id: &str) -> Result<bool> {
-        if id == "automa" {
-            return Err(anyhow!("Cannot unregister built-in 'automa' extension. You may disable it instead."));
+        if id == "automation" {
+            return Err(anyhow!("Cannot unregister built-in 'automation' extension. You may disable it instead."));
         }
         let removed = self.extensions.remove(id).is_some();
         if removed {

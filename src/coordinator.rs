@@ -29,8 +29,8 @@ pub fn resolve_cli_runner_extension_path() -> String {
     ];
 
     let ssot = crate::resolver::canonical_ssot_dir();
-    possible_paths.push(ssot.join("browser").join("extensions").join("automa"));
-    possible_paths.push(ssot.join("automa").join("runner"));
+    possible_paths.push(ssot.join("browser").join("extensions").join("automation"));
+    possible_paths.push(ssot.join("automation").join("runner"));
 
     if let Ok(exe_path) = std::env::current_exe()
         && let Some(exe_dir) = exe_path.parent() {

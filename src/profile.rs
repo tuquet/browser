@@ -115,7 +115,7 @@ impl BrowserProfile {
             user_agent: None,
             proxy: None,
             timezone: None,
-            extensions: Some(vec!["automa".to_string()]),
+            extensions: Some(vec!["automation".to_string()]),
             custom_headers: None,
             fingerprint_seed: None,
             os_platform: Some("windows".to_string()),
@@ -207,7 +207,7 @@ impl BrowserProfile {
             user_agent: None,
             proxy: proxy_opt,
             timezone: Some(timezone),
-            extensions: Some(vec!["automa".to_string()]),
+            extensions: Some(vec!["automation".to_string()]),
             custom_headers: None,
             fingerprint_seed: Some(seed),
             os_platform: Some(os_platform.clone()),
@@ -353,11 +353,11 @@ impl BrowserProfile {
         Ok(profile)
     }
 
-    /// Resolves effective extension IDs, guaranteeing core 'automa' engine is present for automation
+    /// Resolves effective extension IDs, guaranteeing core 'automation' engine is present for automation
     pub fn get_effective_extensions(&self) -> Vec<String> {
-        let mut list = self.extensions.clone().unwrap_or_else(|| vec!["automa".to_string()]);
-        if !list.iter().any(|e| e.eq_ignore_ascii_case("automa")) {
-            list.insert(0, "automa".to_string());
+        let mut list = self.extensions.clone().unwrap_or_else(|| vec!["automation".to_string()]);
+        if !list.iter().any(|e| e.eq_ignore_ascii_case("automation")) {
+            list.insert(0, "automation".to_string());
         }
         list
     }

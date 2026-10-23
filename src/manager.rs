@@ -104,10 +104,10 @@ impl BrowserManager {
             }
             let original_ext_path = std::path::Path::new(&cleaned);
             if original_ext_path.exists() && original_ext_path.is_dir() {
-                let is_automa = cleaned.to_lowercase().contains("automa")
+                let is_automa = cleaned.to_lowercase().contains("automation")
                     || (original_ext_path.join("manifest.json").exists() && {
                         std::fs::read_to_string(original_ext_path.join("manifest.json"))
-                            .map(|c| c.to_lowercase().contains("automa"))
+                            .map(|c| c.to_lowercase().contains("automation"))
                             .unwrap_or(false)
                     });
 
@@ -156,7 +156,7 @@ impl BrowserManager {
                     
                     final_ext_paths.push(browser_ext_dir.to_string_lossy().to_string());
                 } else {
-                    // Non-automa extension (e.g. ublock, cookie-injector): load directly without copying
+                    // Non-automation extension (e.g. ublock, cookie-injector): load directly without copying
                     final_ext_paths.push(cleaned);
                 }
             } else {
@@ -273,7 +273,7 @@ impl BrowserManager {
             if p_name.contains("chrome") || p_name.contains("chromium") || p_name.contains("edge") || p_name.contains("brave") {
                 let cmd_line = process.cmd().iter().map(|s| s.to_string_lossy()).collect::<Vec<_>>().join(" ");
                 let is_child_of_target = process.parent().map(|ppid| pids_to_kill.contains(&ppid.as_u32())).unwrap_or(false);
-                if cmd_line.contains("automa") || cmd_line.contains("--remote-debugging-port") || pids_to_kill.contains(&pid.as_u32()) || is_child_of_target {
+                if cmd_line.contains("automation") || cmd_line.contains("--remote-debugging-port") || pids_to_kill.contains(&pid.as_u32()) || is_child_of_target {
                     let _ = process.kill();
                 }
             }

@@ -88,7 +88,7 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
 
     // 2. If no local bucket or results, fetch from GitHub raw content
     if results.is_empty() {
-        let known_ids = ["automa", "ublock", "cookie-injector"];
+        let known_ids = ["automation", "ublock", "cookie-injector"];
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(5))
             .build()?;
@@ -143,12 +143,12 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
             return Ok(ext);
         }
 
-    // Check if built-in automa local development build can be provisioned
-    if manifest.id == "automa" {
+    // Check if built-in automation local development build can be provisioned
+    if manifest.id == "automation" {
         let local_automa = PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
         if local_automa.exists() {
             let ext = Extension {
-                id: "automa".to_string(),
+                id: "automation".to_string(),
                 name: manifest.name,
                 version: manifest.version,
                 description: Some(manifest.description),
@@ -239,7 +239,7 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
             description: Some(manifest.description),
             path: final_dir,
             enabled: true,
-            is_builtin: manifest.id == "automa",
+            is_builtin: manifest.id == "automation",
             manifest_version: 3,
         });
 

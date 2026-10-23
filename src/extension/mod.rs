@@ -45,17 +45,17 @@ mod tests {
         assert!(!reg.get("test-ext").unwrap().enabled);
 
         // Built-in protection
-        assert!(reg.unregister("automa").is_err());
+        assert!(reg.unregister("automation").is_err());
     }
 
     #[tokio::test]
     async fn test_profile_extension_automa_ordering() {
         let requested = vec!["ublock".to_string(), "cookie-injector".to_string()];
-        // In automation mode, automa must be auto-injected and placed first
+        // In automation mode, automation must be auto-injected and placed first
         let mut ids = requested.clone();
-        if !ids.iter().any(|id| id.eq_ignore_ascii_case("automa")) {
-            ids.insert(0, "automa".to_string());
+        if !ids.iter().any(|id| id.eq_ignore_ascii_case("automation")) {
+            ids.insert(0, "automation".to_string());
         }
-        assert_eq!(ids[0], "automa");
+        assert_eq!(ids[0], "automation");
     }
 }

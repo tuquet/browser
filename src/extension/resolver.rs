@@ -6,7 +6,7 @@ use super::remote::install_remote_extension;
 
 /// Resolves and validates absolute filesystem paths for a profile's requested extensions.
 /// Handles all profile extension edge cases:
-/// - Edge Case 1.1: Mandatory 'automa' injection when running in automation/workflow mode.
+/// - Edge Case 1.1: Mandatory 'automation' injection when running in automation/workflow mode.
 /// - Edge Case 1.2: Extension priority ordering (Automa first, then other extensions).
 /// - Edge Case 2.1: JIT auto-provisioning from scoop catalog if missing on disk, with graceful omission on failure.
 /// - Edge Case 2.2: Windows path verification (strips verbatim \\?\ prefix, guards against comma delimiter collisions).
@@ -16,13 +16,13 @@ pub async fn resolve_profile_extension_paths(
 ) -> Vec<PathBuf> {
     let mut ids: Vec<String> = requested_ids.to_vec();
 
-    // Edge Case 1.1: Enforce automa presence for automation workflows
-    if is_automation_mode && !ids.iter().any(|id| id.eq_ignore_ascii_case("automa")) {
-        ids.insert(0, "automa".to_string());
+    // Edge Case 1.1: Enforce automation presence for automation workflows
+    if is_automation_mode && !ids.iter().any(|id| id.eq_ignore_ascii_case("automation")) {
+        ids.insert(0, "automation".to_string());
     }
 
-    // Edge Case 1.2: Ensure 'automa' is always prioritized first if present
-    if let Some(pos) = ids.iter().position(|id| id.eq_ignore_ascii_case("automa"))
+    // Edge Case 1.2: Ensure 'automation' is always prioritized first if present
+    if let Some(pos) = ids.iter().position(|id| id.eq_ignore_ascii_case("automation"))
         && pos > 0 {
             let automa_id = ids.remove(pos);
             ids.insert(0, automa_id);
@@ -54,7 +54,7 @@ pub async fn resolve_profile_extension_paths(
                 if installed.path.exists() {
                     path_opt = Some(installed.path);
                 }
-            } else if id_clean == "automa" {
+            } else if id_clean == "automation" {
                 // Fallback to local cli runner extension path
                 let fallback_path = PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
                 if fallback_path.exists() {

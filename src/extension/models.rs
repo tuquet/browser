@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
 pub struct Extension {
-    /// Unique identifier slug (e.g. "automa", "ublock-origin")
+    /// Unique identifier slug (e.g. "automation", "ublock-origin")
     pub id: String,
     /// Human-readable display label
     pub name: String,
