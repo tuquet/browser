@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 
@@ -70,7 +70,13 @@ impl Extension {
         let id = id_override.unwrap_or_else(|| {
             name.to_lowercase()
                 .chars()
-                .map(|c| if c.is_alphanumeric() || c == '-' || c == '_' { c } else { '-' })
+                .map(|c| {
+                    if c.is_alphanumeric() || c == '-' || c == '_' {
+                        c
+                    } else {
+                        '-'
+                    }
+                })
                 .collect::<String>()
                 .trim_matches('-')
                 .to_string()

@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use futures::StreamExt;
 use std::env;
 use std::io::Write;
@@ -9,9 +9,7 @@ use super::paths::{
     get_platform_exe_rel_path, get_platform_key, get_runtime_dir, get_runtime_exe_path,
     resolve_data_dir,
 };
-use super::types::{
-    PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION,
-};
+use super::types::{PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION};
 
 /// Constructs the list of official high-speed CDN download mirror URLs for Open-Source Chromium
 pub fn get_download_urls(revision: &str) -> Vec<String> {
@@ -68,13 +66,19 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     let _ = std::fs::create_dir_all(&runtimes_root);
 
     let is_lts = target_query == "lts"
-        || release.version == manifest.channels.get("lts").map(|s| s.as_str()).unwrap_or("148.0.7778.215");
+        || release.version
+            == manifest
+                .channels
+                .get("lts")
+                .map(|s| s.as_str())
+                .unwrap_or("148.0.7778.215");
 
-    let target_dir = if (is_lts || target_query == "stealth") && runtimes_root.join("stealth").exists() {
-        runtimes_root.join("stealth")
-    } else {
-        runtimes_root.join(format!("v{}", release.version))
-    };
+    let target_dir =
+        if (is_lts || target_query == "stealth") && runtimes_root.join("stealth").exists() {
+            runtimes_root.join("stealth")
+        } else {
+            runtimes_root.join(format!("v{}", release.version))
+        };
 
     let target_exe = target_dir.join(get_platform_exe_rel_path());
     if !force && target_exe.exists() {
@@ -82,14 +86,20 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     }
 
     if release.status == "buggy" {
-        eprintln!("\n⚠️ WARNING: Release v{} is marked as BUGGY in the manifest!", release.version);
+        eprintln!(
+            "\n⚠️ WARNING: Release v{} is marked as BUGGY in the manifest!",
+            release.version
+        );
         eprintln!("  Notes: {}\n", release.notes);
     }
 
     println!("============================================================");
     println!(" Browser - C++ Antidetect Engine Provisioning");
     println!("============================================================");
-    println!(" Version:    v{} (Channel: {}, Status: {})", release.version, release.channel, release.status);
+    println!(
+        " Version:    v{} (Channel: {}, Status: {})",
+        release.version, release.channel, release.status
+    );
     println!(" Platform:   {}", platform_key);
     println!(" Asset:      {}", asset.asset_name);
     println!(" Source:     {}", asset.url);
@@ -109,9 +119,10 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
         .ok();
 
     if let Some(proxy_str) = proxy_candidate
-        && let Ok(proxy) = reqwest::Proxy::all(&proxy_str) {
-            builder = builder.proxy(proxy);
-        }
+        && let Ok(proxy) = reqwest::Proxy::all(&proxy_str)
+    {
+        builder = builder.proxy(proxy);
+    }
 
     let client = builder.build()?;
     let extension = if asset.asset_name.ends_with(".tar.xz") {
@@ -119,14 +130,25 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     } else if asset.asset_name.ends_with(".zip") {
         "zip"
     } else {
-        asset.asset_name.rsplit_once('.').map(|(_, ext)| ext).unwrap_or("archive")
+        asset
+            .asset_name
+            .rsplit_once('.')
+            .map(|(_, ext)| ext)
+            .unwrap_or("archive")
     };
-    let temp_archive_path = std::env::temp_dir().join(format!("stealth_chromium_{}_{}.{}", platform_key, release.version, extension));
+    let temp_archive_path = std::env::temp_dir().join(format!(
+        "stealth_chromium_{}_{}.{}",
+        platform_key, release.version, extension
+    ));
 
     let mut file = tokio::fs::File::create(&temp_archive_path).await?;
     let response = client.get(&asset.url).send().await?;
     if !response.status().is_success() {
-        return Err(anyhow!("Failed to download {}: HTTP {}", asset.url, response.status()));
+        return Err(anyhow!(
+            "Failed to download {}: HTTP {}",
+            asset.url,
+            response.status()
+        ));
     }
 
     let total_bytes = response.content_length().unwrap_or(asset.size);
@@ -141,8 +163,14 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
         hasher.update(&chunk);
         downloaded_bytes += chunk.len() as u64;
 
-        if last_reported.elapsed().as_millis() >= 300 || (total_bytes > 0 && downloaded_bytes >= total_bytes) {
-            let pct = if total_bytes > 0 { (downloaded_bytes as f64 / total_bytes as f64) * 100.0 } else { 0.0 };
+        if last_reported.elapsed().as_millis() >= 300
+            || (total_bytes > 0 && downloaded_bytes >= total_bytes)
+        {
+            let pct = if total_bytes > 0 {
+                (downloaded_bytes as f64 / total_bytes as f64) * 100.0
+            } else {
+                0.0
+            };
             print!(
                 "\r[StealthDownloader] {:>5.1}% ({:.1} MB / {:.1} MB)...",
                 pct.min(100.0),
@@ -227,7 +255,10 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
     };
 
     if !effective_exe.exists() {
-        return Err(anyhow!("Extraction completed but executable not found at {:?}", effective_exe));
+        return Err(anyhow!(
+            "Extraction completed but executable not found at {:?}",
+            effective_exe
+        ));
     }
 
     #[cfg(unix)]
@@ -260,18 +291,27 @@ pub async fn download_stealth_runtime(force: bool, query: Option<&str>) -> Resul
 
     let _ = set_active_version(&release.version);
 
-    println!("✓ Successfully installed C++ Antidetect Chromium v{} at: {}", release.version, effective_exe.display());
+    println!(
+        "✓ Successfully installed C++ Antidetect Chromium v{} at: {}",
+        release.version,
+        effective_exe.display()
+    );
     Ok(effective_exe.to_string_lossy().to_string())
 }
 
 /// Downloads and installs official Open-Source Chromium into <data_dir>/runtimes/chromium-<platform>/
-pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str>) -> Result<String> {
+pub async fn download_chromium_runtime(
+    force: bool,
+    custom_revision: Option<&str>,
+) -> Result<String> {
     use tokio::io::AsyncWriteExt;
 
     let exe_path = get_runtime_exe_path();
     if !force && exe_path.exists() {
         let abs_path = if !exe_path.is_absolute() {
-            std::env::current_dir().map(|cwd| cwd.join(&exe_path)).unwrap_or_else(|_| exe_path.clone())
+            std::env::current_dir()
+                .map(|cwd| cwd.join(&exe_path))
+                .unwrap_or_else(|_| exe_path.clone())
         } else {
             exe_path.clone()
         };
@@ -286,7 +326,10 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     println!(" Browser - Open-Source Chromium Provisioning");
     println!("============================================================");
     println!(" Engine:     Chromium (Pure Open Source - BSD 3-Clause)");
-    println!(" Version:    v{} (Revision {})", PINNED_CHROMIUM_VERSION, revision);
+    println!(
+        " Version:    v{} (Revision {})",
+        PINNED_CHROMIUM_VERSION, revision
+    );
     println!(" Platform:   {}", platform);
     println!(" Primary:    {}", mirrors[0]);
     println!(" Target:     {}", exe_path.display());
@@ -307,19 +350,20 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
         .ok();
 
     if let Some(proxy_str) = proxy_candidate
-        && let Ok(proxy) = reqwest::Proxy::all(&proxy_str) {
-            builder = builder.proxy(proxy);
-        }
+        && let Ok(proxy) = reqwest::Proxy::all(&proxy_str)
+    {
+        builder = builder.proxy(proxy);
+    }
 
     let client = builder.build()?;
 
-    let temp_zip_path = std::env::temp_dir().join(format!(
-        "chromium_oss_{}_{}.zip",
-        platform, revision
-    ));
+    let temp_zip_path =
+        std::env::temp_dir().join(format!("chromium_oss_{}_{}.zip", platform, revision));
 
     let mut downloaded_bytes: u64 = if temp_zip_path.exists() {
-        std::fs::metadata(&temp_zip_path).map(|m| m.len()).unwrap_or(0)
+        std::fs::metadata(&temp_zip_path)
+            .map(|m| m.len())
+            .unwrap_or(0)
     } else {
         0
     };
@@ -341,7 +385,10 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
         let response = match req.send().await {
             Ok(res) => res,
             Err(e) => {
-                eprintln!("\n[ChromiumDownloader] Mirror {} connection error: {}. Retrying with next mirror...", url, e);
+                eprintln!(
+                    "\n[ChromiumDownloader] Mirror {} connection error: {}. Retrying with next mirror...",
+                    url, e
+                );
                 mirror_idx += 1;
                 tokio::time::sleep(std::time::Duration::from_secs(2)).await;
                 continue;
@@ -352,11 +399,15 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
         if status == reqwest::StatusCode::PARTIAL_CONTENT {
             // Resuming download
             if total_bytes == 0 {
-                if let Some(cr) = response.headers().get("Content-Range").and_then(|h| h.to_str().ok())
+                if let Some(cr) = response
+                    .headers()
+                    .get("Content-Range")
+                    .and_then(|h| h.to_str().ok())
                     && let Some(slash_idx) = cr.rfind('/')
-                        && let Ok(tot) = cr[slash_idx + 1..].trim().parse::<u64>() {
-                            total_bytes = tot;
-                        }
+                    && let Ok(tot) = cr[slash_idx + 1..].trim().parse::<u64>()
+                {
+                    total_bytes = tot;
+                }
                 if total_bytes == 0 {
                     total_bytes = downloaded_bytes + response.content_length().unwrap_or(0);
                 }
@@ -369,7 +420,10 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
             // Already fully downloaded!
             break;
         } else {
-            eprintln!("\n[ChromiumDownloader] Server returned HTTP {}. Switching mirror...", status);
+            eprintln!(
+                "\n[ChromiumDownloader] Server returned HTTP {}. Switching mirror...",
+                status
+            );
             mirror_idx += 1;
             tokio::time::sleep(std::time::Duration::from_secs(2)).await;
             continue;
@@ -381,10 +435,17 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
             .append(downloaded_bytes > 0)
             .truncate(downloaded_bytes == 0)
             .open(&temp_zip_path)
-            .await {
-                Ok(f) => f,
-                Err(e) => return Err(anyhow!("Failed to open temp archive {:?}: {}", temp_zip_path, e)),
-            };
+            .await
+        {
+            Ok(f) => f,
+            Err(e) => {
+                return Err(anyhow!(
+                    "Failed to open temp archive {:?}: {}",
+                    temp_zip_path,
+                    e
+                ));
+            }
+        };
 
         let mut stream = response.bytes_stream();
         let mut stream_failed = false;
@@ -400,14 +461,18 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
                     }
                     downloaded_bytes += chunk.len() as u64;
 
-                    if last_reported.elapsed().as_millis() >= 300 || (total_bytes > 0 && downloaded_bytes >= total_bytes) {
+                    if last_reported.elapsed().as_millis() >= 300
+                        || (total_bytes > 0 && downloaded_bytes >= total_bytes)
+                    {
                         if total_bytes > 0 {
                             let pct = (downloaded_bytes as f64 / total_bytes as f64) * 100.0;
                             let mb_down = downloaded_bytes as f64 / 1_048_576.0;
                             let mb_tot = total_bytes as f64 / 1_048_576.0;
                             print!(
                                 "\r[ChromiumDownloader] {:>5.1}% ({:.1} MB / {:.1} MB)...",
-                                pct.min(100.0), mb_down, mb_tot
+                                pct.min(100.0),
+                                mb_down,
+                                mb_tot
                             );
                         } else {
                             let mb_down = downloaded_bytes as f64 / 1_048_576.0;
@@ -432,10 +497,9 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
         let _ = file.flush().await;
         drop(file);
 
-        if !stream_failed
-            && (total_bytes == 0 || downloaded_bytes >= total_bytes) {
-                break; // Complete!
-            }
+        if !stream_failed && (total_bytes == 0 || downloaded_bytes >= total_bytes) {
+            break; // Complete!
+        }
 
         mirror_idx += 1;
         tokio::time::sleep(std::time::Duration::from_millis(500)).await;
@@ -490,8 +554,14 @@ pub async fn download_chromium_runtime(force: bool, custom_revision: Option<&str
     }
 
     if raw_extracted_path.exists() {
-        std::fs::rename(&raw_extracted_path, &target_dir)
-            .map_err(|e| anyhow!("Failed to rename extracted folder {:?} to {:?}: {}", raw_extracted_path, target_dir, e))?;
+        std::fs::rename(&raw_extracted_path, &target_dir).map_err(|e| {
+            anyhow!(
+                "Failed to rename extracted folder {:?} to {:?}: {}",
+                raw_extracted_path,
+                target_dir,
+                e
+            )
+        })?;
     }
 
     let target_exe = get_runtime_exe_path();
@@ -561,6 +631,8 @@ pub async fn resolve_executable_path(_default_browser: &str) -> Result<String> {
     }
 
     // Auto-provision dedicated C++ Antidetect Chromium on first run
-    println!("Dedicated C++ Antidetect Chromium runtime not found. Auto-provisioning Golden LTS...");
+    println!(
+        "Dedicated C++ Antidetect Chromium runtime not found. Auto-provisioning Golden LTS..."
+    );
     download_stealth_runtime(false, Some("lts")).await
 }

@@ -6,8 +6,8 @@ use super::paths::{
     get_runtime_exe_path,
 };
 use super::types::{
-    DetectedHostBrowser, InstalledRuntimeInfo, RuntimeStatus, PINNED_CHROMIUM_REVISION,
-    PINNED_CHROMIUM_VERSION, PINNED_STEALTH_CHROMIUM_VERSION,
+    DetectedHostBrowser, InstalledRuntimeInfo, PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION,
+    PINNED_STEALTH_CHROMIUM_VERSION, RuntimeStatus,
 };
 
 /// Returns the dedicated standalone Chromium runtime descriptor (Zero Host Scanning)
@@ -15,7 +15,10 @@ pub fn detect_host_browsers() -> Vec<DetectedHostBrowser> {
     let exe_path = get_runtime_exe_path();
     let is_stealth = exe_path.to_string_lossy().contains("stealth");
     let name = if is_stealth {
-        format!("Chromium C++ Antidetect Engine (v{})", PINNED_STEALTH_CHROMIUM_VERSION)
+        format!(
+            "Chromium C++ Antidetect Engine (v{})",
+            PINNED_STEALTH_CHROMIUM_VERSION
+        )
     } else {
         format!("Chromium Open Source (v{})", PINNED_CHROMIUM_VERSION)
     };
@@ -41,7 +44,10 @@ pub fn get_runtime_status() -> RuntimeStatus {
     let pinned_version = if is_stealth {
         format!("v{} (C++ Antidetect LTS)", PINNED_STEALTH_CHROMIUM_VERSION)
     } else {
-        format!("v{} (rev {})", PINNED_CHROMIUM_VERSION, PINNED_CHROMIUM_REVISION)
+        format!(
+            "v{} (rev {})",
+            PINNED_CHROMIUM_VERSION, PINNED_CHROMIUM_REVISION
+        )
     };
 
     RuntimeStatus {
@@ -94,7 +100,11 @@ pub fn list_installed_runtimes() -> Vec<InstalledRuntimeInfo> {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.is_dir() {
-                let id = path.file_name().and_then(|s| s.to_str()).unwrap_or("").to_string();
+                let id = path
+                    .file_name()
+                    .and_then(|s| s.to_str())
+                    .unwrap_or("")
+                    .to_string();
 
                 // STRICT FILTER: Discard vanilla chromium completely
                 if id == "chromium-win64" || id.starts_with("chromium-") {

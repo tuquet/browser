@@ -22,11 +22,14 @@ pub async fn resolve_profile_extension_paths(
     }
 
     // Edge Case 1.2: Ensure 'automation' is always prioritized first if present
-    if let Some(pos) = ids.iter().position(|id| id.eq_ignore_ascii_case("automation"))
-        && pos > 0 {
-            let automa_id = ids.remove(pos);
-            ids.insert(0, automa_id);
-        }
+    if let Some(pos) = ids
+        .iter()
+        .position(|id| id.eq_ignore_ascii_case("automation"))
+        && pos > 0
+    {
+        let automa_id = ids.remove(pos);
+        ids.insert(0, automa_id);
+    }
 
     let mut resolved_paths = Vec::new();
 
@@ -40,9 +43,10 @@ pub async fn resolve_profile_extension_paths(
         let mut path_opt: Option<PathBuf> = None;
 
         if let Some(ext) = registry.get(&id_clean)
-            && ext.path.exists() {
-                path_opt = Some(ext.path.clone());
-            }
+            && ext.path.exists()
+        {
+            path_opt = Some(ext.path.clone());
+        }
 
         // Edge Case 2.1: Missing on disk -> Attempt JIT provisioning from scoop catalog
         if path_opt.is_none() {
@@ -56,7 +60,8 @@ pub async fn resolve_profile_extension_paths(
                 }
             } else if id_clean == "automation" {
                 // Fallback to local cli runner extension path
-                let fallback_path = PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
+                let fallback_path =
+                    PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
                 if fallback_path.exists() {
                     path_opt = Some(fallback_path);
                 }

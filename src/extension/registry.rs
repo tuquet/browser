@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -6,8 +6,7 @@ use std::path::PathBuf;
 use super::models::Extension;
 
 /// Persistent registry of browser extensions managed by Tuquet
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct ExtensionRegistry {
     pub extensions: HashMap<String, Extension>,
 }
@@ -15,7 +14,9 @@ pub struct ExtensionRegistry {
 impl ExtensionRegistry {
     /// Resolves canonical extensions directory: ~/.tq/browser/extensions/
     pub fn resolve_extensions_dir() -> PathBuf {
-        crate::resolver::canonical_ssot_dir().join("browser").join("extensions")
+        crate::resolver::canonical_ssot_dir()
+            .join("browser")
+            .join("extensions")
     }
 
     /// Registry JSON storage path: ~/.tq/browser/extensions/registry.json
@@ -37,28 +38,35 @@ impl ExtensionRegistry {
         };
 
         // Bootstrap default Automa extension if missing or needs update
-        let default_automa_path = PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
+        let default_automa_path =
+            PathBuf::from(crate::coordinator::resolve_cli_runner_extension_path());
         if !registry.extensions.contains_key("automation") {
             let exists = default_automa_path.exists();
             let automa_ext = Extension {
                 id: "automation".to_string(),
                 name: "Automa MV3 Runner Extension".to_string(),
                 version: "1.0.0".to_string(),
-                description: Some("Built-in worker driver for Chrome DevTools Protocol automation".to_string()),
+                description: Some(
+                    "Built-in worker driver for Chrome DevTools Protocol automation".to_string(),
+                ),
                 path: default_automa_path,
                 enabled: true,
                 is_builtin: true,
                 manifest_version: 3,
             };
-            registry.extensions.insert("automation".to_string(), automa_ext);
+            registry
+                .extensions
+                .insert("automation".to_string(), automa_ext);
             if exists {
                 let _ = registry.save();
             }
         } else if let Some(ext) = registry.extensions.get_mut("automation")
-            && !ext.path.exists() && default_automa_path.exists() {
-                ext.path = default_automa_path;
-                let _ = registry.save();
-            }
+            && !ext.path.exists()
+            && default_automa_path.exists()
+        {
+            ext.path = default_automa_path;
+            let _ = registry.save();
+        }
 
         registry
     }
@@ -96,7 +104,9 @@ impl ExtensionRegistry {
     /// Unregisters an extension by ID
     pub fn unregister(&mut self, id: &str) -> Result<bool> {
         if id == "automation" {
-            return Err(anyhow!("Cannot unregister built-in 'automation' extension. You may disable it instead."));
+            return Err(anyhow!(
+                "Cannot unregister built-in 'automation' extension. You may disable it instead."
+            ));
         }
         let removed = self.extensions.remove(id).is_some();
         if removed {

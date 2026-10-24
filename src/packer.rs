@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use ignore::gitignore::GitignoreBuilder;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -27,7 +27,6 @@ pub const DEFAULT_PROFILE_IGNORE: &[&str] = &[
     "segmentation_platform/",
     "Safe Browsing/",
     "Certificate Revocation Lists/",
-
     // Service Worker & offline caches (can balloon to hundreds of MBs)
     "Service Worker/CacheStorage/",
     "Service Worker/ScriptCache/",
@@ -36,12 +35,10 @@ pub const DEFAULT_PROFILE_IGNORE: &[&str] = &[
     "blob_storage/",
     "File System/",
     "shared_dictionary/",
-
     // Diagnostic logs & telemetry
     "WebRTC Logs/",
     "webrtc_event_logs/",
     "data_reduction_proxy_leveldb/",
-
     // Transient lock files & debug logs (preserves LevelDB/IndexedDB state)
     "Singleton*",
     "chrome_debug.log",
@@ -113,7 +110,8 @@ impl ProfilePacker {
         let mut builder = GitignoreBuilder::new(profile_dir);
 
         for pat in DEFAULT_PROFILE_IGNORE {
-            builder.add_line(None, pat)
+            builder
+                .add_line(None, pat)
                 .map_err(|e| anyhow!("Failed to add default ignore pattern '{}': {}", pat, e))?;
         }
 
@@ -131,13 +129,22 @@ impl ProfilePacker {
             }
         }
 
-        builder.build().map_err(|e| anyhow!("Failed to compile .profileignore matcher: {}", e))
+        builder
+            .build()
+            .map_err(|e| anyhow!("Failed to compile .profileignore matcher: {}", e))
     }
 
     /// Packs a browser profile into a compressed .tar.zst payload, stripping cache bloat
-    pub fn pack(profile_dir: &Path, output_archive: &Path, compression_level: Option<i32>) -> Result<PackReport> {
+    pub fn pack(
+        profile_dir: &Path,
+        output_archive: &Path,
+        compression_level: Option<i32>,
+    ) -> Result<PackReport> {
         if !profile_dir.exists() || !profile_dir.is_dir() {
-            return Err(anyhow!("Profile directory '{}' does not exist", profile_dir.display()));
+            return Err(anyhow!(
+                "Profile directory '{}' does not exist",
+                profile_dir.display()
+            ));
         }
 
         if let Some(parent) = output_archive.parent() {
@@ -170,11 +177,15 @@ impl ProfilePacker {
                 let is_dir = path.is_dir();
 
                 // Check gitignore match against relative path or any parent
-                if matcher.matched_path_or_any_parents(&path, is_dir).is_ignore() {
+                if matcher
+                    .matched_path_or_any_parents(&path, is_dir)
+                    .is_ignore()
+                {
                     continue;
                 }
 
-                let rel_path = path.strip_prefix(root)
+                let rel_path = path
+                    .strip_prefix(root)
                     .map_err(|e| anyhow!("Failed to compute relative path: {}", e))?;
 
                 if is_dir {
@@ -189,7 +200,14 @@ impl ProfilePacker {
             Ok(())
         }
 
-        walk_and_archive(profile_dir, profile_dir, &matcher, &mut tar_builder, &mut file_count, &mut uncompressed_bytes)?;
+        walk_and_archive(
+            profile_dir,
+            profile_dir,
+            &matcher,
+            &mut tar_builder,
+            &mut file_count,
+            &mut uncompressed_bytes,
+        )?;
 
         let zstd_encoder = tar_builder.into_inner()?;
         let mut hashing_writer = zstd_encoder.finish()?;
@@ -203,7 +221,8 @@ impl ProfilePacker {
             0.0
         };
 
-        let profile_id = profile_dir.file_name()
+        let profile_id = profile_dir
+            .file_name()
             .and_then(|n| n.to_str())
             .unwrap_or("unknown")
             .to_string();
@@ -220,9 +239,16 @@ impl ProfilePacker {
     }
 
     /// Unpacks a .tar.zst profile archive into the target profile sandbox directory
-    pub fn unpack(archive_path: &Path, target_profile_dir: &Path, expected_hash: Option<&str>) -> Result<UnpackReport> {
+    pub fn unpack(
+        archive_path: &Path,
+        target_profile_dir: &Path,
+        expected_hash: Option<&str>,
+    ) -> Result<UnpackReport> {
         if !archive_path.exists() {
-            return Err(anyhow!("Archive file '{}' does not exist", archive_path.display()));
+            return Err(anyhow!(
+                "Archive file '{}' does not exist",
+                archive_path.display()
+            ));
         }
 
         // Verify SHA256 integrity if hash is supplied
@@ -238,10 +264,13 @@ impl ProfilePacker {
         }
         let calculated_hash = hex::encode(hasher.finalize());
 
-        if let Some(expected) = expected_hash.filter(|exp| !calculated_hash.eq_ignore_ascii_case(exp.trim())) {
+        if let Some(expected) =
+            expected_hash.filter(|exp| !calculated_hash.eq_ignore_ascii_case(exp.trim()))
+        {
             return Err(anyhow!(
                 "SHA-256 integrity check failed! Expected: {}, Found: {}",
-                expected, calculated_hash
+                expected,
+                calculated_hash
             ));
         }
 
@@ -277,7 +306,10 @@ mod tests {
 
     #[test]
     fn test_profile_pack_unpack_cache_filtering() {
-        let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
         let temp_root = std::env::temp_dir().join(format!("pack_test_{}", now));
         let src_dir = temp_root.join("source_profile");
         let dst_dir = temp_root.join("restored_profile");
@@ -289,12 +321,31 @@ mod tests {
 
         // Essential state files
         std::fs::write(src_dir.join("profile.json"), r#"{"name":"test"}"#).unwrap();
-        std::fs::write(src_dir.join("Default").join("Cookies"), "test-cookies-payload").unwrap();
-        std::fs::write(src_dir.join("Default").join("Local Storage").join("leveldb.log"), "db-data").unwrap();
+        std::fs::write(
+            src_dir.join("Default").join("Cookies"),
+            "test-cookies-payload",
+        )
+        .unwrap();
+        std::fs::write(
+            src_dir
+                .join("Default")
+                .join("Local Storage")
+                .join("leveldb.log"),
+            "db-data",
+        )
+        .unwrap();
 
         // Bloat files (MUST BE IGNORED)
-        std::fs::write(src_dir.join("Default").join("Cache").join("data_0"), "huge-cache-file").unwrap();
-        std::fs::write(src_dir.join("Default").join("GPUCache").join("index"), "gpu-cache-data").unwrap();
+        std::fs::write(
+            src_dir.join("Default").join("Cache").join("data_0"),
+            "huge-cache-file",
+        )
+        .unwrap();
+        std::fs::write(
+            src_dir.join("Default").join("GPUCache").join("index"),
+            "gpu-cache-data",
+        )
+        .unwrap();
         std::fs::write(src_dir.join("SingletonLock"), "process-lock").unwrap();
         std::fs::write(src_dir.join("temp.tmp"), "temp-data").unwrap();
 
@@ -305,14 +356,22 @@ mod tests {
         assert!(!pack_res.sha256_hash.is_empty());
 
         // 2. Unpack
-        let unpack_res = ProfilePacker::unpack(&archive_path, &dst_dir, Some(&pack_res.sha256_hash)).expect("Unpack failed");
+        let unpack_res =
+            ProfilePacker::unpack(&archive_path, &dst_dir, Some(&pack_res.sha256_hash))
+                .expect("Unpack failed");
         assert_eq!(unpack_res.file_count, pack_res.file_count);
         assert_eq!(unpack_res.sha256_hash, pack_res.sha256_hash);
 
         // 3. Verify Essential Files Exist
         assert!(dst_dir.join("profile.json").exists());
         assert!(dst_dir.join("Default").join("Cookies").exists());
-        assert!(dst_dir.join("Default").join("Local Storage").join("leveldb.log").exists());
+        assert!(
+            dst_dir
+                .join("Default")
+                .join("Local Storage")
+                .join("leveldb.log")
+                .exists()
+        );
 
         // 4. Verify Bloat Files Were Stripped
         assert!(!dst_dir.join("Default").join("Cache").exists());

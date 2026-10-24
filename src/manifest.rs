@@ -78,8 +78,14 @@ impl BrowserManifest {
 
     /// Returns the Golden LTS release
     pub fn get_lts_release(&self) -> Option<&ReleaseEntry> {
-        let lts_ver = self.channels.get("lts").map(|s| s.as_str()).unwrap_or("148.0.7778.215");
-        self.releases.iter().find(|r| r.version == lts_ver)
+        let lts_ver = self
+            .channels
+            .get("lts")
+            .map(|s| s.as_str())
+            .unwrap_or("148.0.7778.215");
+        self.releases
+            .iter()
+            .find(|r| r.version == lts_ver)
             .or_else(|| self.releases.iter().find(|r| r.status == "recommended"))
     }
 }

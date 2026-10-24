@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 
@@ -33,9 +33,20 @@ pub fn find_local_bucket_dir() -> Option<PathBuf> {
     if let Ok(home) = std::env::var("USERPROFILE").or_else(|_| std::env::var("HOME")) {
         let home_path = PathBuf::from(home);
         let candidates = [
-            home_path.join("scoop").join("buckets").join("tuquet").join("bucket"),
-            home_path.join("Repository").join("tuquet").join("scoop-bucket").join("bucket"),
-            home_path.join("Repository").join("scoop-bucket").join("bucket"),
+            home_path
+                .join("scoop")
+                .join("buckets")
+                .join("tuquet")
+                .join("bucket"),
+            home_path
+                .join("Repository")
+                .join("tuquet")
+                .join("scoop-bucket")
+                .join("bucket"),
+            home_path
+                .join("Repository")
+                .join("scoop-bucket")
+                .join("bucket"),
         ];
         for c in candidates {
             if c.exists() {
@@ -52,39 +63,45 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
 
     // 1. Try scanning local Scoop bucket for maximum speed and offline capability
     if let Some(bucket_dir) = find_local_bucket_dir()
-        && let Ok(entries) = std::fs::read_dir(&bucket_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if let Some(file_name) = path.file_name().and_then(|n| n.to_str())
-                    && file_name.starts_with("ext-") && file_name.ends_with(".json") {
-                        let id = file_name
-                            .trim_start_matches("ext-")
-                            .trim_end_matches(".json")
-                            .to_string();
+        && let Ok(entries) = std::fs::read_dir(&bucket_dir)
+    {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if let Some(file_name) = path.file_name().and_then(|n| n.to_str())
+                && file_name.starts_with("ext-")
+                && file_name.ends_with(".json")
+            {
+                let id = file_name
+                    .trim_start_matches("ext-")
+                    .trim_end_matches(".json")
+                    .to_string();
 
-                        if let Ok(content) = std::fs::read_to_string(&path)
-                            && let Ok(raw) = serde_json::from_str::<RawScoopManifest>(&content) {
-                                let desc = raw.description.unwrap_or_else(|| format!("Extension {}", id));
-                                let name = if let Some(dash_idx) = desc.find(" - ") {
-                                    desc[..dash_idx].trim().to_string()
-                                } else {
-                                    id.replace('-', " ")
-                                };
+                if let Ok(content) = std::fs::read_to_string(&path)
+                    && let Ok(raw) = serde_json::from_str::<RawScoopManifest>(&content)
+                {
+                    let desc = raw
+                        .description
+                        .unwrap_or_else(|| format!("Extension {}", id));
+                    let name = if let Some(dash_idx) = desc.find(" - ") {
+                        desc[..dash_idx].trim().to_string()
+                    } else {
+                        id.replace('-', " ")
+                    };
 
-                                results.push(RemoteExtensionManifest {
-                                    id,
-                                    name,
-                                    version: raw.version.unwrap_or_else(|| "1.0.0".to_string()),
-                                    description: desc,
-                                    homepage: raw.homepage,
-                                    url: raw.url.unwrap_or_default(),
-                                    hash: raw.hash,
-                                    source: "scoop-catalog (local)".to_string(),
-                                });
-                            }
-                    }
+                    results.push(RemoteExtensionManifest {
+                        id,
+                        name,
+                        version: raw.version.unwrap_or_else(|| "1.0.0".to_string()),
+                        description: desc,
+                        homepage: raw.homepage,
+                        url: raw.url.unwrap_or_default(),
+                        hash: raw.hash,
+                        source: "scoop-catalog (local)".to_string(),
+                    });
+                }
             }
         }
+    }
 
     // 2. If no local bucket or results, fetch from GitHub raw content
     if results.is_empty() {
@@ -100,25 +117,28 @@ pub async fn fetch_available_extensions() -> Result<Vec<RemoteExtensionManifest>
             );
             if let Ok(res) = client.get(&manifest_url).send().await
                 && res.status().is_success()
-                    && let Ok(raw) = res.json::<RawScoopManifest>().await {
-                        let desc = raw.description.unwrap_or_else(|| format!("Extension {}", id));
-                        let name = if let Some(dash_idx) = desc.find(" - ") {
-                            desc[..dash_idx].trim().to_string()
-                        } else {
-                            id.replace('-', " ")
-                        };
+                && let Ok(raw) = res.json::<RawScoopManifest>().await
+            {
+                let desc = raw
+                    .description
+                    .unwrap_or_else(|| format!("Extension {}", id));
+                let name = if let Some(dash_idx) = desc.find(" - ") {
+                    desc[..dash_idx].trim().to_string()
+                } else {
+                    id.replace('-', " ")
+                };
 
-                        results.push(RemoteExtensionManifest {
-                            id: id.to_string(),
-                            name,
-                            version: raw.version.unwrap_or_else(|| "1.0.0".to_string()),
-                            description: desc,
-                            homepage: raw.homepage,
-                            url: raw.url.unwrap_or_default(),
-                            hash: raw.hash,
-                            source: "scoop-catalog (github)".to_string(),
-                        });
-                    }
+                results.push(RemoteExtensionManifest {
+                    id: id.to_string(),
+                    name,
+                    version: raw.version.unwrap_or_else(|| "1.0.0".to_string()),
+                    description: desc,
+                    homepage: raw.homepage,
+                    url: raw.url.unwrap_or_default(),
+                    hash: raw.hash,
+                    source: "scoop-catalog (github)".to_string(),
+                });
+            }
         }
     }
 
@@ -136,12 +156,14 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
 
     let ext_dir = ExtensionRegistry::resolve_extensions_dir().join(&manifest.id);
 
-    if ext_dir.exists() && !force
-        && let Ok(ext) = Extension::from_unpacked_dir(&ext_dir, Some(manifest.id.clone())) {
-            let mut reg = ExtensionRegistry::load();
-            let _ = reg.register(ext.clone());
-            return Ok(ext);
-        }
+    if ext_dir.exists()
+        && !force
+        && let Ok(ext) = Extension::from_unpacked_dir(&ext_dir, Some(manifest.id.clone()))
+    {
+        let mut reg = ExtensionRegistry::load();
+        let _ = reg.register(ext.clone());
+        return Ok(ext);
+    }
 
     // Check if built-in automation local development build can be provisioned
     if manifest.id == "automation" {
@@ -164,7 +186,10 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
     }
 
     if manifest.url.is_empty() {
-        return Err(anyhow!("Extension '{}' has no download URL configured in manifest.", manifest.id));
+        return Err(anyhow!(
+            "Extension '{}' has no download URL configured in manifest.",
+            manifest.id
+        ));
     }
 
     println!("============================================================");
@@ -182,18 +207,24 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
         .timeout(std::time::Duration::from_secs(120))
         .build()?;
 
-    let response = client
-        .get(&manifest.url)
-        .send()
-        .await
-        .map_err(|e| anyhow!("Failed to initiate download for extension {}: {}", manifest.id, e))?;
+    let response = client.get(&manifest.url).send().await.map_err(|e| {
+        anyhow!(
+            "Failed to initiate download for extension {}: {}",
+            manifest.id,
+            e
+        )
+    })?;
 
     if !response.status().is_success() {
-        return Err(anyhow!("Failed to download extension archive: HTTP {}", response.status()));
+        return Err(anyhow!(
+            "Failed to download extension archive: HTTP {}",
+            response.status()
+        ));
     }
 
     let bytes = response.bytes().await?;
-    let temp_zip = std::env::temp_dir().join(format!("ext_{}_{}.zip", manifest.id, std::process::id()));
+    let temp_zip =
+        std::env::temp_dir().join(format!("ext_{}_{}.zip", manifest.id, std::process::id()));
     tokio::fs::write(&temp_zip, &bytes).await?;
 
     if ext_dir.exists() {
@@ -210,7 +241,8 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
         let mut archive = zip::ZipArchive::new(archive_file)?;
         archive.extract(&target_dir)?;
         Ok(())
-    }).await??;
+    })
+    .await??;
 
     let _ = tokio::fs::remove_file(&temp_zip).await;
 
@@ -231,21 +263,26 @@ pub async fn install_remote_extension(id: &str, force: bool) -> Result<Extension
         ext_dir.clone()
     };
 
-    let ext = Extension::from_unpacked_dir(&final_dir, Some(manifest.id.clone()))
-        .unwrap_or_else(|_| Extension {
-            id: manifest.id.clone(),
-            name: manifest.name,
-            version: manifest.version,
-            description: Some(manifest.description),
-            path: final_dir,
-            enabled: true,
-            is_builtin: manifest.id == "automation",
-            manifest_version: 3,
+    let ext =
+        Extension::from_unpacked_dir(&final_dir, Some(manifest.id.clone())).unwrap_or_else(|_| {
+            Extension {
+                id: manifest.id.clone(),
+                name: manifest.name,
+                version: manifest.version,
+                description: Some(manifest.description),
+                path: final_dir,
+                enabled: true,
+                is_builtin: manifest.id == "automation",
+                manifest_version: 3,
+            }
         });
 
     let mut reg = ExtensionRegistry::load();
     reg.register(ext.clone())?;
 
-    println!("Extension '{}' successfully installed and registered.\n", manifest.id);
+    println!(
+        "Extension '{}' successfully installed and registered.\n",
+        manifest.id
+    );
     Ok(ext)
 }

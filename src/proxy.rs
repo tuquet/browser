@@ -160,10 +160,19 @@ mod tests {
 
     #[test]
     fn test_detect_protocol() {
-        assert_eq!(ProxyProbe::detect_protocol("socks5://127.0.0.1:1080"), "socks5");
-        assert_eq!(ProxyProbe::detect_protocol("SOCKS5H://127.0.0.1:1080"), "socks5");
+        assert_eq!(
+            ProxyProbe::detect_protocol("socks5://127.0.0.1:1080"),
+            "socks5"
+        );
+        assert_eq!(
+            ProxyProbe::detect_protocol("SOCKS5H://127.0.0.1:1080"),
+            "socks5"
+        );
         assert_eq!(ProxyProbe::detect_protocol("http://127.0.0.1:8118"), "http");
-        assert_eq!(ProxyProbe::detect_protocol("https://proxy.example.com:443"), "https");
+        assert_eq!(
+            ProxyProbe::detect_protocol("https://proxy.example.com:443"),
+            "https"
+        );
         assert_eq!(ProxyProbe::detect_protocol("tcp://unknown:1234"), "unknown");
     }
 

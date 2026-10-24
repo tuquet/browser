@@ -17,17 +17,22 @@ pub struct BrowserSession {
 }
 
 pub fn browser_registry() -> &'static Arc<RwLock<std::collections::HashMap<String, u32>>> {
-    static REGISTRY: OnceLock<Arc<RwLock<std::collections::HashMap<String, u32>>>> = OnceLock::new();
+    static REGISTRY: OnceLock<Arc<RwLock<std::collections::HashMap<String, u32>>>> =
+        OnceLock::new();
     REGISTRY.get_or_init(|| Arc::new(RwLock::new(HashMap::new())))
 }
 
-pub fn browser_sessions() -> &'static Arc<RwLock<std::collections::HashMap<String, BrowserSession>>> {
-    static SESSIONS: OnceLock<Arc<RwLock<std::collections::HashMap<String, BrowserSession>>>> = OnceLock::new();
+pub fn browser_sessions() -> &'static Arc<RwLock<std::collections::HashMap<String, BrowserSession>>>
+{
+    static SESSIONS: OnceLock<Arc<RwLock<std::collections::HashMap<String, BrowserSession>>>> =
+        OnceLock::new();
     SESSIONS.get_or_init(|| Arc::new(RwLock::new(HashMap::new())))
 }
 
-pub fn browser_launchers() -> &'static Arc<RwLock<std::collections::HashMap<String, BrowserLauncher>>> {
-    static LAUNCHERS: OnceLock<Arc<RwLock<std::collections::HashMap<String, BrowserLauncher>>>> = OnceLock::new();
+pub fn browser_launchers()
+-> &'static Arc<RwLock<std::collections::HashMap<String, BrowserLauncher>>> {
+    static LAUNCHERS: OnceLock<Arc<RwLock<std::collections::HashMap<String, BrowserLauncher>>>> =
+        OnceLock::new();
     LAUNCHERS.get_or_init(|| Arc::new(RwLock::new(HashMap::new())))
 }
 
@@ -61,8 +66,9 @@ impl BrowserManager {
     }
 
     pub async fn launch(&mut self) -> Result<String> {
-        let executable_path = crate::resolver::resolve_executable_path(&self.options.default_browser).await?;
-        
+        let executable_path =
+            crate::resolver::resolve_executable_path(&self.options.default_browser).await?;
+
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await?;
         let debugging_port = listener.local_addr()?.port();
         drop(listener); // Free the port
@@ -72,7 +78,10 @@ impl BrowserManager {
                 .join(format!(
                     "automa_browser_{}_{}",
                     self.options.browser_id,
-                    std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis()
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap_or_default()
+                        .as_millis()
                 ))
                 .to_string_lossy()
                 .to_string()
@@ -113,10 +122,17 @@ impl BrowserManager {
 
                 if is_automa {
                     // Copy the extension to a browser-specific unique temp directory
-                    let timestamp = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_millis();
-                    let browser_ext_dir = get_temp_dir().join(format!("automa_ext_{}_{}", self.options.browser_id, timestamp));
-                    self.created_ext_dirs.push(browser_ext_dir.to_string_lossy().to_string());
-                    
+                    let timestamp = std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap_or_default()
+                        .as_millis();
+                    let browser_ext_dir = get_temp_dir().join(format!(
+                        "automa_ext_{}_{}",
+                        self.options.browser_id, timestamp
+                    ));
+                    self.created_ext_dirs
+                        .push(browser_ext_dir.to_string_lossy().to_string());
+
                     // Copy directory recursively using pure Rust
                     copy_dir_all(original_ext_path.to_path_buf(), browser_ext_dir.clone()).await?;
 
@@ -141,19 +157,22 @@ impl BrowserManager {
                     let manifest_path = browser_ext_dir.join("manifest.json");
                     if manifest_path.exists()
                         && let Ok(content) = tokio::fs::read_to_string(&manifest_path).await
-                            && let Ok(mut manifest) = serde_json::from_str::<serde_json::Value>(&content) {
-                                let has_valid_version = manifest.get("version")
-                                    .and_then(|v| v.as_str())
-                                    .map(|s| !s.is_empty())
-                                    .unwrap_or(false);
-                                if !has_valid_version {
-                                    manifest["version"] = serde_json::Value::String("1.28.27".to_string());
-                                    if let Ok(new_content) = serde_json::to_string_pretty(&manifest) {
-                                        let _ = tokio::fs::write(&manifest_path, new_content).await;
-                                    }
-                                }
+                        && let Ok(mut manifest) =
+                            serde_json::from_str::<serde_json::Value>(&content)
+                    {
+                        let has_valid_version = manifest
+                            .get("version")
+                            .and_then(|v| v.as_str())
+                            .map(|s| !s.is_empty())
+                            .unwrap_or(false);
+                        if !has_valid_version {
+                            manifest["version"] = serde_json::Value::String("1.28.27".to_string());
+                            if let Ok(new_content) = serde_json::to_string_pretty(&manifest) {
+                                let _ = tokio::fs::write(&manifest_path, new_content).await;
                             }
-                    
+                        }
+                    }
+
                     final_ext_paths.push(browser_ext_dir.to_string_lossy().to_string());
                 } else {
                     // Non-automation extension (e.g. ublock, cookie-injector): load directly without copying
@@ -178,18 +197,21 @@ impl BrowserManager {
         let ws_url = launcher.launch().await?;
         let pid_opt = launcher.get_pid();
         self.pid = pid_opt;
-        
+
         if let Some(pid) = pid_opt {
             let mut registry = browser_registry().write().await;
             registry.insert(self.options.browser_id.clone(), pid);
 
             let mut sessions = browser_sessions().write().await;
-            sessions.insert(self.options.browser_id.clone(), BrowserSession {
-                pid,
-                debugging_port,
-                ws_url: ws_url.clone(),
-                user_data_dir: self.options.user_data_dir.clone().unwrap_or_default(),
-            });
+            sessions.insert(
+                self.options.browser_id.clone(),
+                BrowserSession {
+                    pid,
+                    debugging_port,
+                    ws_url: ws_url.clone(),
+                    user_data_dir: self.options.user_data_dir.clone().unwrap_or_default(),
+                },
+            );
         }
 
         // Store active launcher in registry so that it can be closed cleanly via command-group
@@ -200,19 +222,21 @@ impl BrowserManager {
             }
             launchers.insert(self.options.browser_id.clone(), launcher);
         }
-        
+
         Ok(ws_url)
     }
 
     pub fn get_pid(&self) -> Option<u32> {
-        self.pid.or_else(|| self.launcher.as_ref().and_then(|l| l.get_pid()))
+        self.pid
+            .or_else(|| self.launcher.as_ref().and_then(|l| l.get_pid()))
     }
 
     pub async fn cleanup(&mut self) -> Result<()> {
         let launcher = {
             let mut launchers = browser_launchers().write().await;
             launchers.remove(&self.options.browser_id)
-        }.or_else(|| self.launcher.take());
+        }
+        .or_else(|| self.launcher.take());
 
         if let Some(mut launcher) = launcher {
             launcher.close().await?;
@@ -239,12 +263,13 @@ impl BrowserManager {
 
         // If user_data_dir was ephemeral (created in Temp with automa_browser_), clean it up
         if let Some(ref dir) = self.resolved_user_data_dir
-            && dir.contains("automa_browser_") {
-                let p = std::path::Path::new(dir);
-                if p.exists() {
-                    let _ = tokio::fs::remove_dir_all(p).await;
-                }
+            && dir.contains("automa_browser_")
+        {
+            let p = std::path::Path::new(dir);
+            if p.exists() {
+                let _ = tokio::fs::remove_dir_all(p).await;
             }
+        }
         self.resolved_user_data_dir = None;
 
         Ok(())
@@ -270,10 +295,26 @@ impl BrowserManager {
         sys.refresh_all();
         for (pid, process) in sys.processes() {
             let p_name = process.name().to_string_lossy().to_lowercase();
-            if p_name.contains("chrome") || p_name.contains("chromium") || p_name.contains("edge") || p_name.contains("brave") {
-                let cmd_line = process.cmd().iter().map(|s| s.to_string_lossy()).collect::<Vec<_>>().join(" ");
-                let is_child_of_target = process.parent().map(|ppid| pids_to_kill.contains(&ppid.as_u32())).unwrap_or(false);
-                if cmd_line.contains("automation") || cmd_line.contains("--remote-debugging-port") || pids_to_kill.contains(&pid.as_u32()) || is_child_of_target {
+            if p_name.contains("chrome")
+                || p_name.contains("chromium")
+                || p_name.contains("edge")
+                || p_name.contains("brave")
+            {
+                let cmd_line = process
+                    .cmd()
+                    .iter()
+                    .map(|s| s.to_string_lossy())
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                let is_child_of_target = process
+                    .parent()
+                    .map(|ppid| pids_to_kill.contains(&ppid.as_u32()))
+                    .unwrap_or(false);
+                if cmd_line.contains("automation")
+                    || cmd_line.contains("--remote-debugging-port")
+                    || pids_to_kill.contains(&pid.as_u32())
+                    || is_child_of_target
+                {
                     let _ = process.kill();
                 }
             }
@@ -290,7 +331,10 @@ impl BrowserManager {
         if let Ok(mut entries) = tokio::fs::read_dir(&temp_dir).await {
             while let Ok(Some(entry)) = entries.next_entry().await {
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name.starts_with("automa_ext_") || name.starts_with("automa_browser_") || name.starts_with("automa_run_") {
+                if name.starts_with("automa_ext_")
+                    || name.starts_with("automa_browser_")
+                    || name.starts_with("automa_run_")
+                {
                     let p = entry.path();
                     remove_dir_all_with_retry(&p).await;
                 }
@@ -308,7 +352,10 @@ async fn remove_dir_all_with_retry(path: &std::path::Path) {
     }
 }
 
-fn copy_dir_all(src: std::path::PathBuf, dst: std::path::PathBuf) -> Pin<Box<dyn Future<Output = std::io::Result<()>> + Send>> {
+fn copy_dir_all(
+    src: std::path::PathBuf,
+    dst: std::path::PathBuf,
+) -> Pin<Box<dyn Future<Output = std::io::Result<()>> + Send>> {
     Box::pin(async move {
         tokio::fs::create_dir_all(&dst).await?;
         let mut entries = tokio::fs::read_dir(src).await?;
@@ -363,7 +410,13 @@ pub async fn sanitize_browser_profile(user_data_dir: &std::path::Path, is_force:
     }
 
     // Always clean lock files to ensure profile is not locked on next startup
-    let lock_files = ["SingletonLock", "SingletonCookie", "SingletonSocket", "lockfile", "parent.lock"];
+    let lock_files = [
+        "SingletonLock",
+        "SingletonCookie",
+        "SingletonSocket",
+        "lockfile",
+        "parent.lock",
+    ];
     for lock in &lock_files {
         let lock_path = user_data_dir.join(lock);
         if lock_path.exists() {
@@ -399,9 +452,10 @@ pub async fn sanitize_browser_profile(user_data_dir: &std::path::Path, is_force:
         if let Ok(mut entries) = tokio::fs::read_dir(user_data_dir).await {
             while let Ok(Some(entry)) = entries.next_entry().await {
                 if let Some(ext) = entry.path().extension()
-                    && ext == "dmp" {
-                        let _ = tokio::fs::remove_file(entry.path()).await;
-                    }
+                    && ext == "dmp"
+                {
+                    let _ = tokio::fs::remove_file(entry.path()).await;
+                }
             }
         }
     }

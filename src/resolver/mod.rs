@@ -22,7 +22,7 @@ pub use paths::{
     get_runtime_dir, get_runtime_exe_path, resolve_data_dir,
 };
 pub use types::{
-    BrowserConfigFile, DetectedHostBrowser, InstalledRuntimeInfo, RuntimeStatus,
-    DEFAULT_SSOT_DIR_NAME, PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION,
-    PINNED_STEALTH_CHROMIUM_VERSION,
+    BrowserConfigFile, DEFAULT_SSOT_DIR_NAME, DetectedHostBrowser, InstalledRuntimeInfo,
+    PINNED_CHROMIUM_REVISION, PINNED_CHROMIUM_VERSION, PINNED_STEALTH_CHROMIUM_VERSION,
+    RuntimeStatus,
 };

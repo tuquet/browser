@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
@@ -19,7 +19,8 @@ pub fn unpack_archive_file(archive_path: &Path, extract_to: &Path) -> Result<()>
         {
             let tar_f = File::open(&temp_tar_path)?;
             let mut tar_archive = tar::Archive::new(tar_f);
-            tar_archive.unpack(extract_to)
+            tar_archive
+                .unpack(extract_to)
                 .map_err(|e| anyhow!("Failed to unpack tar archive: {}", e))?;
         }
         let _ = std::fs::remove_file(&temp_tar_path);
@@ -45,7 +46,8 @@ pub fn unpack_archive_file(archive_path: &Path, extract_to: &Path) -> Result<()>
             {
                 let tar_f = File::open(&temp_tar_path)?;
                 let mut tar_archive = tar::Archive::new(tar_f);
-                tar_archive.unpack(extract_to)
+                tar_archive
+                    .unpack(extract_to)
                     .map_err(|e| anyhow!("Failed to unpack tar archive: {}", e))?;
             }
             let _ = std::fs::remove_file(&temp_tar_path);

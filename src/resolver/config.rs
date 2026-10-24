@@ -1,17 +1,17 @@
-use anyhow::{anyhow, Result};
+use anyhow::{Result, anyhow};
 use std::env;
 use std::path::PathBuf;
 
 use super::types::{
-    BrowserConfigFile, InstalledRuntimeInfo, DEFAULT_SSOT_DIR_NAME,
-    PINNED_STEALTH_CHROMIUM_VERSION,
+    BrowserConfigFile, DEFAULT_SSOT_DIR_NAME, InstalledRuntimeInfo, PINNED_STEALTH_CHROMIUM_VERSION,
 };
 
 /// Resolves the canonical SSOT root directory (~/.tq/ or $TQ_HOME)
 pub fn canonical_ssot_dir() -> PathBuf {
     if let Ok(dir) = env::var(crate::constants::ENV_TQ_HOME)
         .or_else(|_| env::var(crate::constants::ENV_SPECTER_HOME))
-        && !dir.trim().is_empty() {
+        && !dir.trim().is_empty()
+    {
         return PathBuf::from(dir);
     }
     let home = env::var("USERPROFILE")
@@ -69,14 +69,19 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
         ));
     }
 
-    let matched = installed.iter().find(|r| {
-        r.version == stripped
-            || r.major_version == stripped
-            || r.id == q
-            || r.id == stripped
-            || ((stripped.eq_ignore_ascii_case("lts") || stripped.eq_ignore_ascii_case("stealth")) && r.version == PINNED_STEALTH_CHROMIUM_VERSION)
-            || r.channel.eq_ignore_ascii_case(stripped)
-    }).cloned();
+    let matched = installed
+        .iter()
+        .find(|r| {
+            r.version == stripped
+                || r.major_version == stripped
+                || r.id == q
+                || r.id == stripped
+                || ((stripped.eq_ignore_ascii_case("lts")
+                    || stripped.eq_ignore_ascii_case("stealth"))
+                    && r.version == PINNED_STEALTH_CHROMIUM_VERSION)
+                || r.channel.eq_ignore_ascii_case(stripped)
+        })
+        .cloned();
 
     if let Some(target) = matched {
         let cfg_path = get_browser_config_path();
@@ -102,7 +107,9 @@ pub fn set_active_version(query: &str) -> Result<InstalledRuntimeInfo> {
     if let Some(rel) = manifest.find_release(query) {
         Err(anyhow!(
             "Version '{}' ({}) is available in upstream manifest but not installed on this machine.\n  Run 'tq browser install {}' to install it.",
-            query, rel.version, query
+            query,
+            rel.version,
+            query
         ))
     } else {
         Err(anyhow!(

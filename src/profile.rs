@@ -56,7 +56,6 @@ pub struct BrowserProfile {
     #[serde(default)]
     pub device_pixel_ratio: Option<f32>,
 
-
     // --- Client Hints & Sensors ---
     #[serde(default)]
     pub sec_ch_ua: Option<String>,
@@ -64,7 +63,6 @@ pub struct BrowserProfile {
     pub sec_ch_ua_platform: Option<String>,
     #[serde(default)]
     pub sec_ch_ua_mobile: Option<bool>,
-
 
     // --- Grouping & Custom Startup Flags ---
     #[serde(default)]
@@ -136,7 +134,10 @@ impl BrowserProfile {
             screen_width: Some(1920),
             screen_height: Some(1080),
             device_pixel_ratio: Some(1.0),
-            sec_ch_ua: Some("\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\"".to_string()),
+            sec_ch_ua: Some(
+                "\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\""
+                    .to_string(),
+            ),
             sec_ch_ua_platform: Some("\"Windows\"".to_string()),
             sec_ch_ua_mobile: Some(false),
             group_name: Some("default".to_string()),
@@ -147,7 +148,9 @@ impl BrowserProfile {
 
     /// Resolves canonical default root directory for browser profiles: ~/.tq/browser/profiles
     pub fn default_profiles_dir() -> PathBuf {
-        crate::resolver::canonical_ssot_dir().join("browser").join("profiles")
+        crate::resolver::canonical_ssot_dir()
+            .join("browser")
+            .join("profiles")
     }
 
     /// Generates a realistic deterministic profile with pseudo-random hardware fingerprint
@@ -228,8 +231,15 @@ impl BrowserProfile {
             screen_width: Some(if os_platform == "macos" { 2560 } else { 1920 }),
             screen_height: Some(if os_platform == "macos" { 1440 } else { 1080 }),
             device_pixel_ratio: Some(if os_platform == "macos" { 2.0 } else { 1.0 }),
-            sec_ch_ua: Some("\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\"".to_string()),
-            sec_ch_ua_platform: Some(if os_platform == "macos" { "\"macOS\"".to_string() } else { "\"Windows\"".to_string() }),
+            sec_ch_ua: Some(
+                "\"Chromium\";v=\"148\", \"Not A(Brand\";v=\"24\", \"Google Chrome\";v=\"148\""
+                    .to_string(),
+            ),
+            sec_ch_ua_platform: Some(if os_platform == "macos" {
+                "\"macOS\"".to_string()
+            } else {
+                "\"Windows\"".to_string()
+            }),
             sec_ch_ua_mobile: Some(false),
             group_name: Some("default".to_string()),
             tags: Some(Vec::new()),
@@ -274,7 +284,11 @@ impl BrowserProfile {
             return Ok(matched.clone());
         }
 
-        anyhow::bail!("Browser profile '{}' not found in {}", target, profiles_dir.display())
+        anyhow::bail!(
+            "Browser profile '{}' not found in {}",
+            target,
+            profiles_dir.display()
+        )
     }
 
     /// Scans and returns all stored browser profiles
@@ -321,7 +335,11 @@ impl BrowserProfile {
     }
 
     /// Packs this profile's sandbox into a compressed .tar.zst archive, stripping cache bloat
-    pub fn pack(&self, base_dir: &Path, output_archive: Option<&Path>) -> anyhow::Result<crate::packer::PackReport> {
+    pub fn pack(
+        &self,
+        base_dir: &Path,
+        output_archive: Option<&Path>,
+    ) -> anyhow::Result<crate::packer::PackReport> {
         let sandbox_dir = self.get_sandbox_dir(base_dir);
         let default_out = sandbox_dir.with_extension("tar.zst");
         let target_out = output_archive.unwrap_or(&default_out);
@@ -329,14 +347,26 @@ impl BrowserProfile {
     }
 
     /// Restores a profile from a .tar.zst archive into the SSOT sandbox directory
-    pub fn unpack_archive(archive_path: &Path, base_dir: &Path, expected_hash: Option<&str>) -> anyhow::Result<Self> {
-        let temp_dir = std::env::temp_dir().join(format!("unpack_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos()));
+    pub fn unpack_archive(
+        archive_path: &Path,
+        base_dir: &Path,
+        expected_hash: Option<&str>,
+    ) -> anyhow::Result<Self> {
+        let temp_dir = std::env::temp_dir().join(format!(
+            "unpack_{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos()
+        ));
         let report = crate::packer::ProfilePacker::unpack(archive_path, &temp_dir, expected_hash)?;
 
         let meta_file = temp_dir.join("profile.json");
         if !meta_file.exists() {
             let _ = std::fs::remove_dir_all(&temp_dir);
-            return Err(anyhow::anyhow!("Archive does not contain a valid profile.json metadata file"));
+            return Err(anyhow::anyhow!(
+                "Archive does not contain a valid profile.json metadata file"
+            ));
         }
 
         let content = std::fs::read_to_string(&meta_file)?;
@@ -355,7 +385,10 @@ impl BrowserProfile {
 
     /// Resolves effective extension IDs, guaranteeing core 'automation' engine is present for automation
     pub fn get_effective_extensions(&self) -> Vec<String> {
-        let mut list = self.extensions.clone().unwrap_or_else(|| vec!["automation".to_string()]);
+        let mut list = self
+            .extensions
+            .clone()
+            .unwrap_or_else(|| vec!["automation".to_string()]);
         if !list.iter().any(|e| e.eq_ignore_ascii_case("automation")) {
             list.insert(0, "automation".to_string());
         }
@@ -446,7 +479,13 @@ mod tests {
 
     #[test]
     fn test_profile_generate_and_persistence_lifecycle() {
-        let temp_dir = std::env::temp_dir().join(format!("prof_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        let temp_dir = std::env::temp_dir().join(format!(
+            "prof_test_{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
         let _ = std::fs::create_dir_all(&temp_dir);
 
         // 1. Generate deterministic profile
@@ -475,7 +514,8 @@ mod tests {
         let loaded_by_id = BrowserProfile::load(&profile.id, &temp_dir).expect("Load by ID failed");
         assert_eq!(loaded_by_id.name, "Test-Facebook-Ad");
 
-        let loaded_by_name = BrowserProfile::load("test-facebook-ad", &temp_dir).expect("Load by name failed");
+        let loaded_by_name =
+            BrowserProfile::load("test-facebook-ad", &temp_dir).expect("Load by name failed");
         assert_eq!(loaded_by_name.id, profile.id);
 
         // 4. List profiles
@@ -486,7 +526,10 @@ mod tests {
         // 5. Build CLI args
         let args = profile.build_cli_args(&temp_dir);
         assert!(args.iter().any(|a| a.starts_with("--fingerprint=133742")));
-        assert!(args.iter().any(|a| a.starts_with("--proxy-server=socks5://127.0.0.1:1080")));
+        assert!(
+            args.iter()
+                .any(|a| a.starts_with("--proxy-server=socks5://127.0.0.1:1080"))
+        );
         assert!(args.iter().any(|a| a == "--disable-non-proxied-udp"));
         assert!(args.iter().any(|a| a == "--window-size=1920,1080"));
         assert!(args.iter().any(|a| a == "--force-device-scale-factor=1.00"));

@@ -33,18 +33,23 @@ pub fn resolve_cli_runner_extension_path() -> String {
     possible_paths.push(ssot.join("automation").join("runner"));
 
     if let Ok(exe_path) = std::env::current_exe()
-        && let Some(exe_dir) = exe_path.parent() {
-            possible_paths.push(exe_dir.join("apps/runner/dist"));
-            possible_paths.push(exe_dir.join("../runner/dist"));
-            possible_paths.push(exe_dir.join("../../apps/runner/dist"));
-            possible_paths.push(exe_dir.join("../../../apps/runner/dist"));
-        }
+        && let Some(exe_dir) = exe_path.parent()
+    {
+        possible_paths.push(exe_dir.join("apps/runner/dist"));
+        possible_paths.push(exe_dir.join("../runner/dist"));
+        possible_paths.push(exe_dir.join("../../apps/runner/dist"));
+        possible_paths.push(exe_dir.join("../../../apps/runner/dist"));
+    }
 
-    if let Ok(env_ext) = std::env::var(crate::constants::ENV_EXTENSION_PATH).or_else(|_| std::env::var(crate::constants::ENV_EXTENSION_PATH_TUQUET)).or_else(|_| std::env::var("AUTOMA_EXTENSION_PATH")) {
+    if let Ok(env_ext) = std::env::var(crate::constants::ENV_EXTENSION_PATH)
+        .or_else(|_| std::env::var(crate::constants::ENV_EXTENSION_PATH_TUQUET))
+        .or_else(|_| std::env::var("AUTOMA_EXTENSION_PATH"))
+    {
         possible_paths.insert(0, std::path::PathBuf::from(env_ext));
     }
 
-    let mut ext_path = possible_paths.into_iter()
+    let mut ext_path = possible_paths
+        .into_iter()
         .find(|p| p.exists())
         .and_then(|p| p.canonicalize().ok())
         .map(|p| p.to_string_lossy().to_string())

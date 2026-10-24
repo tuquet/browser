@@ -99,7 +99,8 @@ pub fn get_runtime_dir() -> PathBuf {
             let path = entry.path();
             if path.is_dir() {
                 let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("");
-                if !name.starts_with("chromium-") && path.join(get_platform_exe_rel_path()).exists() {
+                if !name.starts_with("chromium-") && path.join(get_platform_exe_rel_path()).exists()
+                {
                     return path;
                 }
             }
@@ -128,9 +129,10 @@ pub fn calculate_dir_size(dir: &Path) -> Option<u64> {
                     total += meta.len();
                 }
             } else if path.is_dir()
-                && let Some(sub_total) = calculate_dir_size(&path) {
-                    total += sub_total;
-                }
+                && let Some(sub_total) = calculate_dir_size(&path)
+            {
+                total += sub_total;
+            }
         }
     }
     Some(total)
@@ -144,7 +146,10 @@ pub fn clean_runtime() -> Result<()> {
 
     if runtime_dir.exists() {
         std::fs::remove_dir_all(&runtime_dir)?;
-        println!("Successfully removed dedicated runtime directory: {:?}", runtime_dir);
+        println!(
+            "Successfully removed dedicated runtime directory: {:?}",
+            runtime_dir
+        );
     } else {
         println!("No dedicated runtime found at {:?}", runtime_dir);
     }
